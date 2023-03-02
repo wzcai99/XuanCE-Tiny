@@ -1,0 +1,14 @@
+nenvs: 4
+nsize: 50000
+minibatch: 256
+start_egreedy: 1.0
+end_egreedy: 0.1
+training_frequency: 2
+update_frequency: 100
+lr_rate: 0.001
+save_model_frequency: 100
+start_training_size: 5000
+train_steps: 25000
+gamma: 0.99
+logdir: "./logs/dqn/CartPole/"
+modeldir: "./models/dqn/CartPole/"
