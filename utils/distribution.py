@@ -22,6 +22,8 @@ class Distribution:
         return self.distribution.sample()
     def kl_divergence(self,other_pd):
         return torch.distributions.kl_divergence(self.distribution,other_pd.distribution)
+    def detach(self):
+        raise NotImplementedError
 
 class CategoricalDistribution(Distribution):
     def __init__(self,action_dim:int):
@@ -30,6 +32,8 @@ class CategoricalDistribution(Distribution):
     def set_param(self,**kwargs):
         super().set_param(**kwargs)
         self.distribution = Categorical(logits=self.params['logits'])
+    def detach(self):
+        self.distribution.logits.detach()
         
 class DiagGaussianDistribution(Distribution):
     def __init__(self,action_dim:int):
@@ -42,6 +46,9 @@ class DiagGaussianDistribution(Distribution):
         return super().logprob(x).sum(-1)
     def entropy(self):
         return super().entropy().sum(-1)
+    def detach(self):
+        self.distribution.mean.detach()
+        self.distribution.stddev.detach()
 
 class MultiheadDiagGaussianDistribution(Distribution):
     def __init__(self,action_dim:int,num_head:int):

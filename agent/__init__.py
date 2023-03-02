@@ -5,8 +5,7 @@ from utils.memory import *
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from .policy_gradient.a2c import A2C_Agent
-from .policy_gradient.ppoclip import PPOCLIP_Agent
-
-from .q_learning.dqn import DQN_Agent
+from .a2c import A2C_Agent
+from .ppo import PPO_Agent
+from .dqn import DQN_Agent
 

@@ -125,63 +125,6 @@ class DummyOnPolicyBuffer:
         advantage_batch = sample_batch(self.advantages,tuple([env_choices, step_choices]))
         advantage_batch = (advantage_batch - np.mean(self.advantages)) / (np.std(self.advantages) + 1e-7)
         return input_batch,action_batch,output_batch,return_batch,advantage_batch
-    
-class EpisodeOnPolicyBuffer(DummyOnPolicyBuffer):
-    def __init__(self,
-                 input_shape: dict,
-                 action_shape: tuple,
-                 output_shape: dict,
-                 nenvs: int,       
-                 nsize: int,       
-                 nminibatch: int,  
-                 gamma: float=0.99,
-                 tdlam: float=0.95):
-        super().__init__(input_shape,action_shape,output_shape,nenvs,nsize,nminibatch,gamma,tdlam)
-        self.episode_index = []
-    def finish_path(self, val, i):
-        self.episode_index.append([i,self.start_ids[i],self.ptr-1])
-        super().finish_path(val, i)
-    def store(self,input,action,output,reward,value):
-        store_element(input,self.inputs,self.ptr)
-        store_element(action,self.actions,self.ptr)
-        store_element(output,self.outputs,self.ptr)      
-        store_element(reward,self.rewards,self.ptr)      
-        store_element(value,self.returns,self.ptr)      
-        self.ptr = (self.ptr + 1)
-        self.size = min(self.size+1,self.nsize)
-    def clear(self):
-        self.episode_index = []
-        super().clear()
-    def sample(self):
-        sample_index = np.random.choice(np.arange(len(self.episode_index)),len(self.episode_index)//self.nminibatch)
-        sample_index = np.array(self.episode_index)[sample_index]
-        batch_size = 0
-        for index in sample_index:
-            batch_size += (index[2] - index[1] + 1)
-        batch_inputs = create_memory(self.input_shape,0,batch_size)
-        batch_actions = create_memory(self.action_shape,0,batch_size)
-        batch_outputs = create_memory(self.output_shape,0,batch_size)
-        batch_returns = create_memory((),0,batch_size)
-        batch_advantages = create_memory((),0,batch_size)
-        
-        ptr = 0
-        for index in sample_index:
-            step_indexes = np.arange(index[1],index[2]+1,dtype=np.int32)
-            env_indexes = np.tile([index[0]],(step_indexes.shape[0],))
-            sample_inputs = sample_batch(self.inputs,tuple([env_indexes,step_indexes]))
-            sample_actions = sample_batch(self.actions,tuple([env_indexes,step_indexes]))
-            sample_outputs = sample_batch(self.outputs,tuple([env_indexes,step_indexes]))
-            sample_returns = sample_batch(self.returns,tuple([env_indexes,step_indexes]))
-            sample_advantages = sample_batch(self.advantages,tuple([env_indexes,step_indexes]))
-            store_batch_element(sample_inputs,batch_inputs,ptr)
-            store_batch_element(sample_actions,batch_actions,ptr)
-            store_batch_element(sample_outputs,batch_outputs,ptr)
-            store_batch_element(sample_returns,batch_returns,ptr)
-            store_batch_element(sample_advantages,batch_advantages,ptr)
-            ptr += step_indexes.shape[0]
-        batch_returns = batch_returns - np.mean(batch_returns)
-        return batch_inputs,batch_actions,batch_outputs,batch_returns,batch_advantages
-            
 
 class DummyOffPolicyBuffer:
     def __init__(self,

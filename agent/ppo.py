@@ -1,5 +1,5 @@
 from agent import *
-class PPOCLIP_Agent:
+class PPO_Agent:
     def __init__(self,
                  config,
                  environment,
@@ -77,4 +77,3 @@ class PPOCLIP_Agent:
         
     
 
-#class A2C_RNNAgent:

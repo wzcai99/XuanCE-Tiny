@@ -7,9 +7,8 @@ import numpy as np
 from utils.common import create_directory
 from torch.utils.tensorboard import SummaryWriter
 
+from .a2c import A2C_Learner
+from .ppoclip import PPOCLIP_Learner
 
-from .policy_gradient.a2c import A2C_Learner
-from .policy_gradient.ppoclip import PPOCLIP_Learner
-
-from .q_learning.dqn import DQN_Learner
-
+from .dqn import DQN_Learner
+from .ddqn import DDQN_Learner

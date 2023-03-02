@@ -1,5 +1,4 @@
 from learner import *
-
 class A2C_Learner:
     def __init__(self,
                  config,

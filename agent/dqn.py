@@ -1,4 +1,3 @@
-from numpy import argmax
 from agent import *
 class DQN_Agent:
     def __init__(self,

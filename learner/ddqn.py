@@ -1,5 +1,6 @@
+from responses import target
 from learner import *
-class DQN_Learner:
+class DDQN_Learner:
     def __init__(self,
                  config,
                  policy,
@@ -10,7 +11,6 @@ class DQN_Learner:
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.device = device
-        
         self.gamma = config.gamma
         self.logdir = config.logdir
         self.modeldir = config.modeldir
@@ -29,9 +29,12 @@ class DQN_Learner:
         
         _,evalQ,_ = self.policy(input_batch)
         _,_,targetQ = self.policy(next_input_batch)
+        _,next_evalQ,_ = self.policy(next_input_batch)
+        
         
         evalQ = (evalQ * F.one_hot(tensor_action_batch.long(),evalQ.shape[-1])).sum(-1)
-        targetQ = targetQ.max(dim=-1).values
+        targetA = next_evalQ.argmax(dim=-1)
+        targetQ = (targetQ * F.one_hot(targetA.long(),targetQ.shape[-1])).sum(-1)
         targetQ = tensor_reward_batch + self.gamma*(1-tensor_terminal_batch)*targetQ
         
         loss = F.mse_loss(evalQ,targetQ.detach())

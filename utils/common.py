@@ -5,7 +5,6 @@ import scipy.signal
 import numpy as np
 from argparse import Namespace
 
-
 def get_config(dir_name, args_name):
     with open(os.path.join(dir_name, args_name + ".yaml"), "r") as f:
         try:
