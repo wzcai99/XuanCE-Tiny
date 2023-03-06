@@ -7,6 +7,8 @@ Currently, this repo support the following RL algorithms which are:
 - Double-Q Network(DDQN)
 - Advantage Actor-Critic(A2C)
 - Proximal Policy Optimization(PPO-CLIP)
+- Deep Deterministic Policy Gradient(DDPG)
+- Twin Delayed DDPG(TD3)
 
 We briefly introduce several scenarios to use our RL codebase for beginners.
 - If you want to test whether RL can be equipped for your own problem, 
