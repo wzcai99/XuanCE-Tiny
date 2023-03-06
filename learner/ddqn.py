@@ -1,4 +1,3 @@
-from responses import target
 from learner import *
 class DDQN_Learner:
     def __init__(self,

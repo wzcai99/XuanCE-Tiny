@@ -1,5 +1,5 @@
 from learner import *
-class DDPG_Learner:
+class TD3_Learner:
     def __init__(self,
                  config,
                  policy,
@@ -15,6 +15,7 @@ class DDPG_Learner:
         
         self.tau = config.tau
         self.gamma = config.gamma
+        self.update_decay = config.actor_update_decay
         
         self.logdir = config.logdir
         self.modeldir = config.modeldir
@@ -34,27 +35,28 @@ class DDPG_Learner:
         with torch.no_grad():
             targetQ = self.policy.Qtarget(next_input_batch)
             targetQ = tensor_reward_batch + self.gamma * (1-tensor_terminal_batch) * targetQ
-            
-        currentQ = self.policy.Qaction(input_batch,tensor_action_batch)
-        Q_loss = F.mse_loss(currentQ,targetQ)
+        currentQA,currentQB = self.policy.Qaction(input_batch,tensor_action_batch)
+        Q_loss = F.mse_loss(currentQA,targetQ) + F.mse_loss(currentQB,targetQ)
         self.critic_optimizer.zero_grad()
         Q_loss.backward()
         self.critic_optimizer.step()
         self.critic_scheduler.step()
         # update A network
-        _,_,evalQ = self.policy(input_batch)
-        A_loss = -evalQ.mean()
-        self.actor_optimizer.zero_grad()
-        A_loss.backward()
-        self.actor_optimizer.step()
-        self.actor_scheduler.step()
+        if self.iterations % self.update_decay == 0:
+            _,_,evalQ = self.policy(input_batch)
+            A_loss = -evalQ.mean()
+            self.actor_optimizer.zero_grad()
+            A_loss.backward()
+            self.actor_optimizer.step()
+            self.actor_scheduler.step()
+            self.summary.add_scalar("A-loss",A_loss.item(),self.iterations)
+            self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
         self.policy.soft_update(self.tau)
         
         self.summary.add_scalar("Q-loss",Q_loss.item(),self.iterations)
-        self.summary.add_scalar("A-loss",A_loss.item(),self.iterations)
         self.summary.add_scalar("actor-learning-rate",self.actor_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
         self.summary.add_scalar("critic-learning-rate",self.critic_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
-        self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
+       
         
         if self.iterations % self.save_model_frequency == 0:
             time_string = time.asctime()

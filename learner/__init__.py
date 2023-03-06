@@ -14,3 +14,4 @@ from .dqn import DQN_Learner
 from .ddqn import DDQN_Learner
 
 from .ddpg import DDPG_Learner
+from .td3 import TD3_Learner

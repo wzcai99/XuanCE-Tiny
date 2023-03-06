@@ -1,0 +1,16 @@
+nenvs: 4
+nsize: 50000
+minibatch: 256
+start_noise: 0.25
+end_noise: 0.01
+training_frequency: 1
+tau: 0.005
+actor_lr_rate: 0.001
+actor_update_decay: 3
+critic_lr_rate: 0.001
+save_model_frequency: 100
+start_training_size: 10000
+train_steps: 250000
+gamma: 0.99
+logdir: "./logs/dqn/InvertedPendulum/"
+modeldir: "./models/dqn/InvertedPendulum/"
