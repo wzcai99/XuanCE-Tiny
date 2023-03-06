@@ -12,3 +12,5 @@ from .ppoclip import PPOCLIP_Learner
 
 from .dqn import DQN_Learner
 from .ddqn import DDQN_Learner
+
+from .ddpg import DDPG_Learner

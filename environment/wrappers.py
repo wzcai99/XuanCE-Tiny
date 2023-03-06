@@ -40,7 +40,7 @@ class NormActionWrapper(gym.ActionWrapper):
         assert isinstance(self.action_space,gym.spaces.Box), "Only use the NormActionWrapper for Continuous Action."
     def action(self,act):
         act = np.clip(act,self.input_action_range[0],self.input_action_range[1])
-        assert act >= self.input_action_range[0] and act <= self.input_action_range[1], "input action is out of the defined action range."
+        assert np.min(act) >= self.input_action_range[0] and np.max(act) <= self.input_action_range[1], "input action is out of the defined action range."
         self.action_space_low = self.action_space.low
         self.action_space_high = self.action_space.high
         self.input_action_low = self.input_action_range[0]
