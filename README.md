@@ -19,5 +19,11 @@ the only thing you need is define a environment class similar to gym.Env and dro
 
 More algorithms and documentations in detail are on the way.
 More performance evaluations are on the way.
+Some experiment results are shown below:
+<p align="center">
+<img src="./figures/cartpole.png"  width="400" height="300">
+<img src="./figures/halfcheetah.png"  width="400" height="300">
+</p>
+<!-- ![image](./figures/cartpole.png) -->
 
 

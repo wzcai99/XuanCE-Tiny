@@ -62,17 +62,9 @@ class DuelDQN_Policy(DQN_Policy):
                  representation,
                  initialize,
                  device):
-        super(DuelDQN_Policy,self).__init__()
+        super(DuelDQN_Policy,self).__init__(action_space,representation,initialize,device)
         assert isinstance(action_space,gym.spaces.Discrete), "DQN is not supported for non-discrete action space"
-        self.action_dim = action_space.n
-        self.representation = representation
-        self.input_shape = representation.input_shape.copy()
-        self.output_shape = representation.output_shape.copy()
-        self.output_shape['evalQ'] = (self.action_dim,)
-        self.output_shape['targetQ'] = (self.action_dim,)
-        self.eval_representation = representation
         self.evalQ = DuelQhead(representation.output_shape['state'][0],self.action_dim,initialize,device)
-        self.target_representation = copy.deepcopy(self.eval_representation)
         self.targetQ = copy.deepcopy(self.evalQ)
         
   

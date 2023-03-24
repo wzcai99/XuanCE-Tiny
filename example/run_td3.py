@@ -12,7 +12,7 @@ from agent import TD3_Agent
 config = get_config("./config/td3/","mujoco")
 envs = [NormActionWrapper(BasicWrapper(gym.make("HalfCheetah-v4"))) for i in range(config.nenvs)]
 envs = DummyVecEnv(envs)
-representation = MLP(space2shape(envs.observation_space),(128,),nn.LeakyReLU,nn.init.xavier_uniform,"cuda:0")
+representation = MLP(space2shape(envs.observation_space),(256,),nn.LeakyReLU,nn.init.xavier_uniform,"cuda:0")
 policy = TD3Policy(envs.action_space,representation,nn.init.xavier_uniform,"cuda:0")
 actor_optimizer = torch.optim.Adam(policy.actor_parameters,config.actor_lr_rate,eps=1e-5)
 critic_optimizer = torch.optim.Adam(policy.critic_parameters,config.critic_lr_rate,eps=1e-5)

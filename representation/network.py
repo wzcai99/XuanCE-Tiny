@@ -1,15 +1,4 @@
 from representation import *
-class Identical(nn.Module):
-    def __init__(self,input_shape,device):
-        super(Identical,self).__init__()
-        self.device = device
-        self.input_shape = input_shape
-        self.output_shape = {'state':input_shape['observation']}
-        self.model = None
-    def forward(self,observation:dict):
-        state = torch.as_tensor(observation['observation'],dtype=torch.float32,device=self.device)
-        return {'state':state}
-    
 class MLP(nn.Module):
     def __init__(self,
                  input_shape,

@@ -12,5 +12,5 @@ save_model_frequency: 100
 start_training_size: 10000
 train_steps: 250000
 gamma: 0.99
-logdir: "./logs/dqn/InvertedPendulum/"
-modeldir: "./models/dqn/InvertedPendulum/"
+logdir: "./logs/HalfCheetah(1)/td3/"
+modeldir: "./models/HalfCheetah(1)/td3/"

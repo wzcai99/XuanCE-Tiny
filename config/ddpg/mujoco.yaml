@@ -1,7 +1,7 @@
 nenvs: 4
-nsize: 50000
+nsize: 100000
 minibatch: 256
-start_noise: 0.25
+start_noise: 0.5
 end_noise: 0.01
 training_frequency: 1
 tau: 0.005
@@ -11,5 +11,5 @@ save_model_frequency: 100
 start_training_size: 10000
 train_steps: 250000
 gamma: 0.99
-logdir: "./logs/dqn/InvertedPendulum/"
-modeldir: "./models/dqn/InvertedPendulum/"
+logdir: "./logs/Ant(1)/ddpg/"
+modeldir: "./models/Ant(1)/ddpg/"
