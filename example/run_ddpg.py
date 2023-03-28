@@ -20,7 +20,7 @@ actor_scheduler = torch.optim.lr_scheduler.LinearLR(actor_optimizer, start_facto
 critic_scheduler = torch.optim.lr_scheduler.LinearLR(critic_optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.training_frequency)
 learner = DDPG_Learner(config,policy,[actor_optimizer,critic_optimizer],[actor_scheduler,critic_scheduler],"cuda:0")
 agent = DDPG_Agent(config,envs,policy,learner)
-agent.train(config.train_steps)
+agent.benchmark(config.train_steps,config.evaluate_steps)
 
 
 

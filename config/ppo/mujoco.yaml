@@ -1,0 +1,21 @@
+nenvs: 4
+nsize: 512
+nminibatch: 4
+nepoch: 8
+
+vf_coef: 0.25
+ent_coef: 0.00
+clipgrad_norm: 0.5
+clip_range: 0.20
+target_kl: 0.02
+lr_rate: 0.0007
+
+save_model_frequency: 1000
+train_steps: 750000
+evaluate_steps: 10000
+
+gamma: 0.98
+tdlam: 0.95
+
+logdir: "./logs/Walker(1)/ppo/"
+modeldir: "./models/Walker(1)/ppo/"

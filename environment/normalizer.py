@@ -24,7 +24,6 @@ class RewardNorm(VecEnv):
             scale = np.clip(self.return_rms.std['return'][0],self.scale_range[0],self.scale_range[1])
             rews[i] =  np.clip(rews[i]/scale,self.reward_range[0],self.reward_range[1])
         return obs,rews,terminals,trunctions,infos
-
     def reset(self):
         return self.vecenv.reset()
     def step_async(self, actions):

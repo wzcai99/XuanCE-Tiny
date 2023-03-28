@@ -27,6 +27,9 @@ class A2C_Agent:
                                           self.gamma,
                                           self.tdlam)
         self.summary = SummaryWriter(self.config.logdir)
+        
+        self.train_episodes = np.zeros((self.nenvs,),np.int32)
+        self.train_steps = 0
     
     def interact(self,inputs):
         outputs,dist,v = self.policy(inputs)
@@ -37,9 +40,8 @@ class A2C_Agent:
         return outputs,action,v
     
     def train(self,train_steps:int=10000):
-        episodes = np.zeros((self.nenvs,),np.int32)
         obs,infos = self.environment.reset()
-        for step in tqdm(range(train_steps)):
+        for _ in tqdm(range(train_steps)):
             outputs,actions,pred_values = self.interact(obs)
             next_obs,rewards,terminals,trunctions,infos = self.environment.step(actions)
             self.memory.store(obs,actions,outputs,rewards,pred_values)
@@ -65,17 +67,40 @@ class A2C_Agent:
 
             for i in range(self.nenvs):
                 if terminals[i] or trunctions[i]:
-                    episodes[i] += 1
-                    self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},episodes[i])
-                    self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},step)
-            
+                    self.train_episodes[i] += 1
+                    self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},self.train_episodes[i])
+                    self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},self.train_steps)
             obs = next_obs
-
+            self.train_steps += 1
     
-    # def test()
+    def test(self,test_episode=10,render=False):
+        import copy
+        test_environment = copy.deepcopy(self.environment)
+        obs,infos = test_environment.reset()
+        current_episode = 0
+        scores = []
+        while current_episode < test_episode:
+            if render:
+                test_environment.render("human")
+            outputs,actions,pred_values = self.interact(obs)
+            next_obs,rewards,terminals,trunctions,infos = test_environment.step(actions)
+            for i in range(self.nenvs):
+                if terminals[i] == True or trunctions[i] == True:
+                    scores.append(infos[i]['episode_score'])
+                    current_episode += 1
+            obs = next_obs
+        return scores
     
-    # def evaluate()
-        
-    
-
-#class A2C_RNNAgent:
+    def benchmark(self,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False):
+        import time
+        epoch = int(train_steps / evaluate_steps)
+        benchmark_scores = []
+        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+        for i in range(epoch):
+            if i == epoch - 1:
+                train_step = train_step - ((i+1)*evaluate_steps)
+            else:
+                train_step = evaluate_steps
+            self.train(train_step)
+            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+        np.save(self.config.logdir+"benchmark_%s.npy"%time.asctime(),benchmark_scores)

@@ -89,7 +89,7 @@ class VecEnv(ABC):
         imgs = self.get_images()
         big_img = tile_images(imgs)
         if mode == "human":
-            cv2.imshow("render", big_img)
+            cv2.imshow("render", cv2.cvtColor(big_img,cv2.COLOR_RGB2BGR))
             cv2.waitKey(1)
         elif mode == "rgb_array":
             return big_img
@@ -167,9 +167,9 @@ class DummyVecEnv(VecEnv):
         for env in self.envs:
             env.close()
     def get_images(self):
-        return [env.render("rgb_array") for env in self.envs]
-    def render(self, mode='human'):
-        return super().render(mode=mode)
+        return [env.render() for env in self.envs]
+    def render(self,mode):
+        return super().render(mode)
     # save observation of indexes of e environment
     def _save_obs(self, e, obs):
         if isinstance(self.observation_space,gym.spaces.Dict):

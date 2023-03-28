@@ -1,19 +1,20 @@
 nenvs: 4
-nsize: 512
+nsize: 256
 nminibatch: 4
-nepoch: 10
+nepoch: 8
 
 vf_coef: 0.25
 ent_coef: 0.00
 clipgrad_norm: 0.5
 clip_range: 0.20
+target_kl: 0.1
 lr_rate: 0.0005
 
 save_model_frequency: 100
-train_steps: 250000
+train_steps: 25000
 
-gamma: 0.98
+gamma: 0.99
 tdlam: 0.95
 
-logdir: "./logs/Ant(1)/ppoclip/"
-modeldir: "./models/Ant(1)/ppoclip/"
+logdir: "./logs/CartPole(1)/ppoclip/"
+modeldir: "./models/CartPole(1)/ppoclip/"

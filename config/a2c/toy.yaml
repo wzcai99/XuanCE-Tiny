@@ -6,10 +6,11 @@ nepoch: 1
 vf_coef: 0.25
 ent_coef: 0.01
 clipgrad_norm: 0.5
-lr_rate: 0.0007
+lr_rate: 0.001
 
 save_model_frequency: 100
 train_steps: 25000
+evaluate_steps: 500
 
 gamma: 0.99
 tdlam: 0.95

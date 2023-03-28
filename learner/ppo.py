@@ -1,5 +1,5 @@
 from learner import *
-class PPOCLIP_Learner:
+class PPO_Learner:
     def __init__(self,
                  config,
                  policy,
@@ -38,10 +38,12 @@ class PPOCLIP_Learner:
             param_dict[key] = torch.as_tensor(output_batch[key],device=self.device)
         old_actor.set_param(**param_dict)
         old_logp = old_actor.logprob(tensor_action_batch).detach()
-        
         ratio = (current_logp - old_logp).exp().float()
+        approx_kl = actor.kl_divergence(old_actor).mean()
+        
         surrogate1 = tensor_advantage_batch * ratio
         surrogate2 = ratio.clamp(1-self.clip_range,1+self.clip_range)*tensor_advantage_batch
+        
         actor_loss = -torch.minimum(surrogate1,surrogate2).mean()
         critic_loss = F.mse_loss(critic,tensor_return_batch)
         entropy_loss = actor.entropy().mean()
@@ -57,6 +59,7 @@ class PPOCLIP_Learner:
         self.summary.add_scalar("actor-loss",actor_loss.item(),self.iterations)
         self.summary.add_scalar("critic-loss",critic_loss.item(),self.iterations)
         self.summary.add_scalar("entropy-loss",entropy_loss.item(),self.iterations)
+        self.summary.add_scalar("kl-divergence",approx_kl.item(),self.iterations)
         self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
         self.summary.add_scalar("value_function",critic.mean().item(),self.iterations)
         
@@ -65,4 +68,6 @@ class PPOCLIP_Learner:
             time_string = time_string.replace(" ", "")
             model_path = self.modeldir + "model-%s-%s.pth" % (time.asctime(), str(self.iterations))
             torch.save(self.policy.state_dict(), model_path)
+        return approx_kl
+        
         

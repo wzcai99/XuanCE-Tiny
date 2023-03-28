@@ -8,7 +8,7 @@ from utils.common import create_directory
 from torch.utils.tensorboard import SummaryWriter
 
 from .a2c import A2C_Learner
-from .ppoclip import PPOCLIP_Learner
+from .ppo import PPO_Learner
 
 from .dqn import DQN_Learner
 from .ddqn import DDQN_Learner

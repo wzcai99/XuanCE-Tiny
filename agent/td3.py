@@ -64,20 +64,38 @@ class TD3_Agent:
                     self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},episodes[i])
                     self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},step)
             obs = next_obs
-            self.noise = self.noise - (self.start_noise-self.end_noise)/train_steps
-            
-    
-    def test(self,model_path,test_steps = 10000,egreedy = 0.05):
-        self.policy.load_state_dict(torch.load(self.config.modeldir + model_path))
-        obs,infos = self.environment.reset()
-        for step in tqdm(range(test_steps)):
-            outputs,actions = self.interact(obs,egreedy)
-            next_obs,rewards,terminals,trunctions,infos = self.environment.step(actions)
-            obs = next_obs
-            
+            self.noise = self.noise - (self.start_noise-self.end_noise)/self.config.train_steps
+    def test(self,test_episode=10,render=False):
+        import copy
+        test_environment = copy.deepcopy(self.environment)
+        obs,infos = test_environment.reset()
+        current_episode = 0
+        scores = []
+        while current_episode < test_episode:
+            if render:
+                test_environment.render("human")
+            outputs,actions = self.interact(obs,0)
+            next_obs,rewards,terminals,trunctions,infos = test_environment.step(actions)
             for i in range(self.nenvs):
-                if terminals[i] or trunctions[i]:
-                    print(infos[i]['episode_score'])
+                if terminals[i] == True or trunctions[i] == True:
+                    scores.append(infos[i]['episode_score'])
+                    current_episode += 1
+            obs = next_obs
+        return scores
+    
+    def benchmark(self,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False):
+        import time
+        epoch = int(train_steps / evaluate_steps)
+        benchmark_scores = []
+        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+        for i in range(epoch):
+            if i == epoch - 1:
+                train_step = train_step - ((i+1)*evaluate_steps)
+            else:
+                train_step = evaluate_steps
+            self.train(train_step)
+            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+        np.save(self.config.logdir+"benchmark_%s.npy"%time.asctime(),benchmark_scores)
             
         
              

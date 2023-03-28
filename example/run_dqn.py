@@ -19,7 +19,7 @@ optimizer = torch.optim.Adam(policy.parameters(),config.lr_rate,eps=1e-5)
 scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.training_frequency)
 learner = DQN_Learner(config,policy,optimizer,scheduler,0)
 agent = DQN_Agent(config,envs,policy,learner)
-agent.train(config.train_steps)
+agent.benchmark(config.train_steps,config.evaluate_steps)
 
 
 

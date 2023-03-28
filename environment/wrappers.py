@@ -47,41 +47,4 @@ class NormActionWrapper(gym.ActionWrapper):
         output_action = input_prop * (self.action_space_high - self.action_space_low) + self.action_space_low
         return output_action
     
-# class NormRewardWrapper(gym.RewardWrapper):
-#     def __init__(self,env,scale_reward_range=(0.1,10),clip_reward_range=(-5,5),gamma=0.99):
-#         super().__init__(env)
-#         assert scale_reward_range[0] < scale_reward_range[1], "invalid scale_reward_range."
-#         assert clip_reward_range[0] < clip_reward_range[1], "Invalid clip_reward_range."
-#         assert gamma < 1, "Gamma should be a float value smaller than 1."
-#         self.gamma = gamma
-#         self.scale_reward_range = scale_reward_range
-#         self.clip_reward_range = clip_reward_range
-#         self.return_rms = Running_MeanStd({'return':(1,)})
-#         self.episode_rewards = []
-#     def reward(self,reward):
-#         self.episode_rewards.append(reward)
-#         scale = np.clip(self.return_rms.std['return'][0],self.scale_reward_range[0],self.scale_reward_range[1])
-#         clip_reward = np.clip(reward/scale,self.clip_reward_range[0],self.clip_reward_range[1])
-#         return clip_reward
-#     def reset(self,**kwargs):
-#         if len(self.episode_rewards) > 0:
-#             self.return_rms.update({'return':discount_cumsum(self.episode_rewards,self.gamma)[0:1][np.newaxis,:]})
-#             self.episode_rewards.clear()
-#         return super().reset()
-    
-# # ToDo: A more stable version for Norm observation      
-# class NormObservationWrapper(gym.ObservationWrapper):
-#     def __init__(self,env,scale_observation_range=(0.1,10),clip_observation_range=(-5,5)):
-#         super().__init__(env)
-#         self.scale_observation_range = scale_observation_range
-#         self.clip_observation_range = clip_observation_range
-#         self.observation_rms = Running_MeanStd(space2shape(env.observation_space))
-#         self._observation_rms = Running_MeanStd(space2shape(env.observation_space))
-#     def observation(self, observation):
-#         self.observation_rms.update(observation)
-#         norm_observation = {}
-#         for key,value in zip(observation.keys(),observation.values()):
-#             scale_factor = np.clip(1/(self.observation_rms.std[key] + 1e-7),self.scale_observation_range[0],self.scale_observation_range[1])
-#             norm_observation[key] = np.clip((value - self.observation_rms.mean[key]) * scale_factor,self.clip_observation_range[0],self.clip_observation_range[1])
-#         return norm_observation
   
