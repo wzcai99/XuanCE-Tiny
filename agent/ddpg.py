@@ -100,7 +100,8 @@ class DDPG_Agent:
                 train_step = evaluate_steps
             self.train(train_step)
             benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
-        np.save(self.config.logdir+"benchmark_%s.npy"%time.asctime(),benchmark_scores)
+        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
+        np.save(self.config.logdir+"benchmark_%s.npy"%time_string, benchmark_scores)
             
         
              
