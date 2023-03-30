@@ -40,7 +40,7 @@ class RewardNorm(VecEnv):
         return self.vecenv.reset()
     def step_async(self, actions):
         self.train_steps += 1
-        if self.config.train_steps == self.train_steps:
+        if self.config.train_steps == self.train_steps or self.config.train_steps % self.config.save_model_frequency == 0:
             np.save(os.path.join(self.config.modeldir,"reward_stat.npy"),{'count':self.return_rms.count,'mean':self.return_rms.mean,'var':self.return_rms.var})
         return self.vecenv.step_async(actions)
     def get_images(self):
@@ -83,7 +83,7 @@ class ObservationNorm(VecEnv):
         return self.vecenv.reset()
     def step_async(self, actions):
         self.train_steps += 1
-        if self.config.train_steps == self.train_steps:
+        if self.config.train_steps == self.train_steps or self.config.train_steps % self.config.save_model_frequency == 0:
             np.save(os.path.join(self.config.modeldir,"observation_stat.npy"),{'count':self.obs_rms.count,'mean':self.obs_rms.mean,'var':self.obs_rms.var})
         return self.vecenv.step_async(actions)
     def get_images(self):
