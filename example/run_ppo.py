@@ -26,7 +26,9 @@ if __name__ == "__main__":
     config = get_config(args.config,args.domain)
     envs = [NormActionWrapper(BasicWrapper(gym.make("HalfCheetah-v4",render_mode="rgb_array"))) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
-    envs = ObservationNorm(RewardNorm(envs))
+    envs = RewardNorm(config,envs,train=True)
+    envs = ObservationNorm(config,envs,train=True)
+    
     representation = MLP(space2shape(envs.observation_space),(128,128),nn.LeakyReLU,nn.init.orthogonal_,device)
     policy = Gaussian_ActorCritic(envs.action_space,representation,nn.init.orthogonal_,device)
     if args.pretrain_weight:

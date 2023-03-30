@@ -69,7 +69,6 @@ class DDPG_Agent:
             self.train_steps += 1
             self.noise = self.noise - (self.start_noise-self.end_noise)/self.config.train_steps
             
-    
     def test(self,test_episode=10,render=False):
         import copy
         test_environment = copy.deepcopy(self.environment)

@@ -14,7 +14,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--device",type=str,default="cuda:0")
     parser.add_argument("--config",type=str,default="./config/a2c/")
-    parser.add_argument("--domain",type=str,default="mujoco")
+    parser.add_argument("--domain",type=str,default="toy")
     parser.add_argument("--pretrain_weight",type=str,default=None)
     parser.add_argument("--render",type=bool,default=False)
     args = parser.parse_known_args()[0]
@@ -28,10 +28,11 @@ if __name__ == "__main__":
     # define the vector environment
     envs = [BasicWrapper(gym.make("CartPole-v1",render_mode='rgb_array')) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
-    envs = ObservationNorm(RewardNorm(envs))
+    envs = RewardNorm(config,envs,train=True)
+    envs = ObservationNorm(config,envs,train=True)
     # network and training
     representation = MLP(space2shape(envs.observation_space),(128,128),nn.LeakyReLU,nn.init.orthogonal_,device)
-    policy = Gaussian_ActorCritic(envs.action_space,representation,nn.init.orthogonal_,device)
+    policy = Categorical_ActorCritic(envs.action_space,representation,nn.init.orthogonal_,device)
     if args.pretrain_weight:
         policy.load_state_dict(torch.load(args.pretrain_weight,map_location=device))
     optimizer = torch.optim.Adam(policy.parameters(),config.lr_rate)
