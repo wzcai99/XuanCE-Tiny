@@ -1,33 +1,43 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import argparse
 import gym
 from utils.common import space2shape,get_config
-from environment import BasicWrapper,NormActionWrapper,DummyVecEnv,RewardNorm,ObservationNorm,DMControl
+from environment import BasicWrapper,NormActionWrapper,DummyVecEnv
 from representation import MLP
-from policy import Categorical_ActorCritic,Gaussian_ActorCritic
-from learner import PPO_Learner
-from agent import PPO_Agent
+from policy import TD3Policy
+from learner import TD3_Learner
+from agent import TD3_Agent
 
-# define hyper-parameters
-device = "cuda:0"
-config = get_config("./config/ppo/","mujoco")
-# define the vector environment
-envs = [NormActionWrapper(BasicWrapper(DMControl("walker","stand",200))) for i in range(config.nenvs)]
-envs = DummyVecEnv(envs)
-envs = ObservationNorm(RewardNorm(envs))
-# network and training
-representation = MLP(space2shape(envs.observation_space),(128,128),nn.LeakyReLU,nn.init.orthogonal,device)
-policy = Gaussian_ActorCritic(envs.action_space,representation,nn.init.orthogonal,device)
-# from pre-trained 
-policy.load_state_dict(torch.load(r"D:\zzm_codes\XuanCE\models\Walker(1)\ppo\model-Wed Mar 29 18_28_02 2023-46000.pth"))
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--device",type=str,default="cuda:0")
+    parser.add_argument("--config",type=str,default="./config/td3/")
+    parser.add_argument("--domain",type=str,default="mujoco")
+    parser.add_argument("--pretrain_weight",type=str,default=None)
+    parser.add_argument("--render",type=bool,default=False)
+    args = parser.parse_known_args()[0]
+    return args
 
-optimizer = torch.optim.Adam(policy.parameters(),config.lr_rate)
-scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.nsize * config.nepoch * config.nminibatch)
-learner = PPO_Learner(config,policy,optimizer,scheduler,device)
-agent = PPO_Agent(config,envs,policy,learner)
-agent.benchmark(config.train_steps,config.evaluate_steps, render=True)
-
+if __name__ == "__main__":
+    args = get_args()
+    # define hyper-parameters
+    device = args.device
+    config = get_config(args.config,args.domain)
+    envs = [NormActionWrapper(BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array'))) for i in range(config.nenvs)]
+    envs = DummyVecEnv(envs)
+    representation = MLP(space2shape(envs.observation_space),(256,),nn.LeakyReLU,nn.init.xavier_uniform,device)
+    policy = TD3Policy(envs.action_space,representation,nn.init.xavier_uniform,device)
+    if args.pretrain_weight:
+        policy.load_state_dict(torch.load(args.pretrain_weight,map_location=device))
+    actor_optimizer = torch.optim.Adam(policy.actor_parameters,config.actor_lr_rate,eps=1e-5)
+    critic_optimizer = torch.optim.Adam(policy.critic_parameters,config.critic_lr_rate,eps=1e-5)
+    actor_scheduler = torch.optim.lr_scheduler.LinearLR(actor_optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.training_frequency)
+    critic_scheduler = torch.optim.lr_scheduler.LinearLR(critic_optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.training_frequency)
+    learner = TD3_Learner(config,policy,[actor_optimizer,critic_optimizer],[actor_scheduler,critic_scheduler],device)
+    agent = TD3_Agent(config,envs,policy,learner)
+    agent.benchmark(config.train_steps,config.evaluate_steps,render=args.render)
 
 
 

@@ -31,7 +31,9 @@ class TD3_Agent:
                                            self.nsize,
                                            self.minibatch)
         self.summary = SummaryWriter(self.config.logdir)
-    
+        self.train_episodes = np.zeros((self.nenvs,),np.int32)
+        self.train_steps = 0
+        
     def interact(self,inputs,noise):
         outputs,action,_ = self.policy(inputs)
         action = action.detach().cpu().numpy()
@@ -41,11 +43,10 @@ class TD3_Agent:
         return outputs,np.clip(action,-1,1)
     
     def train(self,train_steps:int=10000):
-        episodes = np.zeros((self.nenvs,),np.int32)
         obs,infos = self.environment.reset()
         for step in tqdm(range(train_steps)):
             outputs,actions = self.interact(obs,self.noise)
-            if step < self.config.start_training_size:
+            if self.train_steps < self.config.start_training_size:
                 actions = [self.environment.action_space.sample() for i in range(self.nenvs)]
             next_obs,rewards,terminals,trunctions,infos = self.environment.step(actions)
             store_next_obs = next_obs.copy()
@@ -55,16 +56,18 @@ class TD3_Agent:
                         if key in store_next_obs.keys():
                             store_next_obs[key][i] = infos[i][key]
             self.memory.store(obs,actions,outputs,rewards,terminals,store_next_obs)
-            if self.memory.size >= self.start_training_size and step % self.training_frequency == 0:
+            if self.memory.size >= self.start_training_size and self.train_steps % self.training_frequency == 0:
                 input_batch,action_batch,output_batch,reward_batch,terminal_batch,next_input_batch = self.memory.sample()
                 self.learner.update(input_batch,action_batch,reward_batch,terminal_batch,next_input_batch)
             for i in range(self.nenvs):
                 if terminals[i] or trunctions[i]:
-                    episodes[i] += 1
-                    self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},episodes[i])
-                    self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},step)
+                    self.train_episodes[i] += 1
+                    self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},self.train_episodes[i])
+                    self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},self.train_steps)
             obs = next_obs
+            self.train_steps += 1
             self.noise = self.noise - (self.start_noise-self.end_noise)/self.config.train_steps
+            
     def test(self,test_episode=10,render=False):
         import copy
         test_environment = copy.deepcopy(self.environment)
