@@ -79,29 +79,37 @@ class A2C_Agent:
         obs,infos = test_environment.reset()
         current_episode = 0
         scores = []
+        images = [[] for i in range(self.nenvs)]
+        episode_images = []
         while current_episode < test_episode:
             if render:
                 test_environment.render("human")
+            else:
+                render_images = test_environment.render('rgb_array')
+                for index,img in enumerate(render_images):
+                    images[index].append(img)     
             outputs,actions,pred_values = self.interact(obs)
             next_obs,rewards,terminals,trunctions,infos = test_environment.step(actions)
             for i in range(self.nenvs):
                 if terminals[i] == True or trunctions[i] == True:
                     scores.append(infos[i]['episode_score'])
+                    episode_images.append(images[i])
+                    images[i] = []
                     current_episode += 1
             obs = next_obs
-        return scores
+        return scores,episode_images
     
     def benchmark(self,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False):
         import time
         epoch = int(train_steps / evaluate_steps)
         benchmark_scores = []
-        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)[0]})
         for i in range(epoch):
             if i == epoch - 1:
                 train_step = train_step - ((i+1)*evaluate_steps)
             else:
                 train_step = evaluate_steps
             self.train(train_step)
-            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)})
+            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)[0]})
         time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
         np.save(self.config.logdir+"benchmark_%s.npy"%time_string, benchmark_scores)

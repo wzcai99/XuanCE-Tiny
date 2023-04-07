@@ -13,8 +13,8 @@ from agent import DQN_Agent
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--device",type=str,default="cuda:0")
-    parser.add_argument("--config",type=str,default="./config/ddqn/")
-    parser.add_argument("--domain",type=str,default="mujoco")
+    parser.add_argument("--config",type=str,default="./config/dqn/")
+    parser.add_argument("--domain",type=str,default="toy")
     parser.add_argument("--pretrain_weight",type=str,default=None)
     parser.add_argument("--render",type=bool,default=False)
     args = parser.parse_known_args()[0]

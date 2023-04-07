@@ -92,7 +92,7 @@ class VecEnv(ABC):
             cv2.imshow("render", cv2.cvtColor(big_img,cv2.COLOR_RGB2BGR))
             cv2.waitKey(1)
         elif mode == "rgb_array":
-            return big_img
+            return imgs
         else:
             raise NotImplementedError
     def close(self):
