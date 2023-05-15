@@ -144,8 +144,8 @@ $ tensorboard --logdir=./logs/ --port=6007
 ```
 $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./logs/ --y_smooth=0.9 --x_smooth=1000
 ```
-<img decoding="async" src="./figures/plotter.png" width="49%" height=250>
-<img decoding="async" src="./figures/tensorboard.png" width="49%" height=250>
+<img decoding="async" src="./figures/plotter.png" width="45%" height=250>
+<img decoding="async" src="./figures/tensorboard.png" width="45%" height=250>
 
 ## Benchmark Results ##
 
