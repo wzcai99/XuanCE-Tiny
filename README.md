@@ -146,8 +146,8 @@ $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./
 ```
 
 <figure>
-<img src="./figures/plotter.png" width="48%" height=225>
-<img src="./figures/tensorboard.png" width="48%" height=225>
+<img src="./figures/plotter.png" width="20%" height=225>
+<img src="./figures/tensorboard.png" width="20%" height=225>
 </figure>
 
 
