@@ -3,12 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import argparse
 import gym
-from utils.common import space2shape,get_config
-from environment import BasicWrapper,NormActionWrapper,DummyVecEnv
-from representation import MLP
-from policy import DDPGPolicy
-from learner import DDPG_Learner
-from agent import DDPG_Agent
+from xuance.utils.common import space2shape,get_config
+from xuance.environment import BasicWrapper,ActionNorm,DummyVecEnv
+from xuance.representation import MLP
+from xuance.policy import DDPGPolicy
+from xuance.learner import DDPG_Learner
+from xuance.agent import DDPG_Agent
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -24,8 +24,9 @@ if __name__ == "__main__":
     args = get_args()
     device = args.device
     config = get_config(args.config,args.domain)
-    envs = [NormActionWrapper(BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array'))) for i in range(config.nenvs)]
+    envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
+    envs = ActionNorm(envs)
     representation = MLP(space2shape(envs.observation_space),(256,),nn.LeakyReLU,nn.init.xavier_uniform_,device)
     policy = DDPGPolicy(envs.action_space,representation,nn.init.xavier_uniform_,device)
     if args.pretrain_weight:

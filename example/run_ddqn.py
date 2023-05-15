@@ -3,12 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import gym
 import argparse
-from utils.common import space2shape,get_config
-from environment import BasicWrapper,DummyVecEnv
-from representation import MLP
-from policy import DQN_Policy
-from learner import DDQN_Learner
-from agent import DQN_Agent
+from xuance.utils.common import space2shape,get_config
+from xuance.environment import BasicWrapper,DummyVecEnv
+from xuance.representation import MLP
+from xuance.policy import DQN_Policy
+from xuance.learner import DDQN_Learner
+from xuance.agent import DQN_Agent
 
 def get_args():
     parser = argparse.ArgumentParser()

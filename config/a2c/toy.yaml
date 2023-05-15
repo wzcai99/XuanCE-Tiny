@@ -15,5 +15,5 @@ evaluate_steps: 500
 gamma: 0.99
 tdlam: 0.95
 
-logdir: "./logs/LunarLander(1)/a2c/"
-modeldir: "./models/LunarLander(1)/a2c/"
+logdir: "./logs/LunarLander/a2c/"
+modeldir: "./models/LunarLander/a2c/"
