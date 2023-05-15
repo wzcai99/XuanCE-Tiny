@@ -144,11 +144,12 @@ $ tensorboard --logdir=./logs/ --port=6007
 ```
 $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./logs/ --y_smooth=0.9 --x_smooth=1000
 ```
-
+<div align=center>
 <figure>
-<img src="./figures/plotter.png" width="20%" height=225>
-<img src="./figures/tensorboard.png" width="20%" height=225>
+<img src="./figures/plotter.png" width="45%" height=225/>
+<img src="./figures/tensorboard.png" width="45%" height=225/>
 </figure>
+</div>
 
 
 <!-- <img decoding="async" src="./figures/plotter.png" width="40%" height=250>
