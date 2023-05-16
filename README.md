@@ -6,7 +6,7 @@ And the code is also compatiable and easy-to-use for researchers to implement th
 
 - For example, if you want to benchmark the RL algorithms on some novel problems, just following the example provided in <strong><em> xuance/environment/custom_envs/dmc.py </em></strong> to formalize a novel problem into Markov Decision Process (MDP) into a gym-based wrapper. A tutorial is provided [here]().
 - If you want to try some advanced representation network, just following the example provided in <strong><em> xuance/representation/network.py </em></strong> to define a new class based on <strong><em> torch.nn.Module</em></strong>. A tutorial is provided [here]().
-- If you figure out a better way for RL optimization process, just add a learner similar to the <strong><em> xuance/learner/xxx.py </em></strong> and define your own loss function. You can compare difference in <strong><em> xuance/learner/a2c.py </em></strong> and <strong><em> learner/ppo.py </em></strong> for your own implementation. 
+- If you figure out a better way for RL optimization process, just add a learner similar to the <strong><em> xuance/learner/xxx.py </em></strong> and define your own loss function. You can compare difference in <strong><em> xuance/learner/a2c.py </em></strong> and <strong><em> xuance/learner/ppo.py </em></strong> for your own implementation. 
 - If you propose a more efficient memory buffer and experience replay scheme, just add your own memory buffer class in <strong><em> xuance/utils/memory.py </em></strong> and replace the memory used in the <strong><em> xuance/agents/xxx.py </em></strong>
 - ...
 - More details of the usage can be found in the [documentions]().
@@ -157,9 +157,41 @@ $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./
 <img decoding="async" src="./figures/tensorboard.png" width="40%" height=250> -->
 
 ## Benchmark Results (ToDo) ##
-We will provide a complete benchmark results in MuJoCo and Atari games.
+We will provide a complete benchmark results in MuJoCo and Atari games. The performance are evaluated with the best model during the training and we report the average scores with 3 different random seeds.
+|  Environment (3M)  | xuance-a2c | tianshou-a2c | xuance-ppo | tianshou-ppo |
+|  :----:  | :----:  |  :----:  | :----:  | :----:  |
+| HalfCheetah-v4  | <strong>2860.9</strong> | 2377.3  | 5749.3 | <strong>7337</strong> |
+| Ant-v4  | 1943.9 | <strong>5236.8</strong>  | 3859.9 | <strong>4079.3</strong> |
+| Walker2d-v4  | <strong>2066.6</strong> | 1805.4  | 4339.3 | <strong>4895.6</strong> |
+| Hopper-v4  | <strong>2531.1</strong> | 1608.6  | <strong>3520.2</strong> | 3127.7 |
+| Swimmer-v4  | <strong>46.9</strong> | 40.2  | <strong>108.9</strong> | 81.4 |
+| Reacher-v4  | -13.5 | <strong>-5.2</strong>  | -4.88 | <strong>-3.7</strong> |
+| Humanoid-v4  | 392.4 | <strong>5316.6</strong>  | 1057.3 | <strong>1369.7</strong> |
+| InvertedPendulum-v4  | 1000.0 | 1000.0  | 1000.0 | 1000.0 |
+| InvertedDoublePendulum-v4  | <strong>9346.6</strong> | 9351.3  | <strong>9468.2</strong> | 9231.3 |
 
+|  Environment (1M)  | xuance-a2c | published-a2c | xuance-ppo | published-ppo |
+|  :----:  | :----:  |  :----:  | :----:  | :----:  |
+| HalfCheetah-v4  | <strong>1264.35</strong> | 1000  | <strong>4628.4</strong> | 1800 |
+| Ant-v4  |  | /  | 2810.7 | / |
+| Walker2d-v4  |  | 850  | <strong>4318.6</strong> | 3460 |
+| Hopper-v4  |  | 900  | <strong>3450.1</strong> | 2330 |
+| Swimmer-v4  |  | 31 | <strong>108.9</strong> | 108 |
+| Reacher-v4  |  | -24  | -8.1 | <strong>-7</strong> |
+| Humanoid-v4  |  | /  | 705.5 | / |
+| InvertedPendulum-v4  |  | 1000  | 1000.0 | 1000 |
+| InvertedDoublePendulum-v4  |  | 7100  | <strong>9359.1</strong> | 8000 |
 
+|  Environment (1M)  | xuance-ddpg | published-ddpg | tianshou-ddpg | xuance-td3 | published-td3 | tianshou-td3 | 
+|  HalfCheetah-v4    |   |  8577.3  | 11718  | :----:  | 9637.0  | 10201.2  |
+|  Ant-v4            |   |  888.8  | 990.4  | :----:  | 4372.0  | 5116.4  |
+|  Walker2d-v4       |   |  3098.1  | 1400.6  | :----:  | 4682.8  | 3982.4  |
+|  Hopper-v4         |   |  1860.0  | 2197.0  | :----:  | 3564.1  | 3472.2  |
+|  Swimmer-v4        |   |  /  | 144.1  | :----:  | /  | 104.2  |
+|  Reacher-v4        |   |  -4.01  | -3.3  | :----:  | -3.6  | -2.7  |
+|  Humanoid-v4       |   |  /  | 177.3  | :----:  | /  | 5189.5  |
+|  InvertedPendulum-v4  |   |  1000.0  | 1000.0  | :----:  | 1000.0  | 1000.0  |
+|  InvertedDoublePendulum-v4  |   |  8370.0  | 8364.3  | :----:  | 9337.5  | 9349.2  |
 
 ## Citing XuanCE ##
 If you use XuanCE in your work, please cite our github repository:
