@@ -183,6 +183,7 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 | InvertedDoublePendulum-v4  |  | 7100  | <strong>9359.1</strong> | 8000 |
 
 |  Environment (1M)  | xuance-ddpg | published-ddpg | tianshou-ddpg | xuance-td3 | published-td3 | tianshou-td3 | 
+|  :----:  | :----:  |  :----:  | :----:  | :----:  | :----:  | :----:  |
 |  HalfCheetah-v4    |   |  8577.3  | 11718  | :----:  | 9637.0  | 10201.2  |
 |  Ant-v4            |   |  888.8  | 990.4  | :----:  | 4372.0  | 5116.4  |
 |  Walker2d-v4       |   |  3098.1  | 1400.6  | :----:  | 4682.8  | 3982.4  |
