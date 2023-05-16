@@ -187,14 +187,14 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 
 |  Environment (1M)  | xuance-ddpg | published-ddpg | tianshou-ddpg | xuance-td3 | published-td3 | tianshou-td3 | 
 |  :----:  | :----:  |  :----:  | :----:  | :----:  | :----:  | :----:  |
-|  HalfCheetah   |   |  8577.3  | 11718  |   | 9637.0  | 10201.2  |
-|  Ant           |   |  888.8  | 990.4  |   | 4372.0  | 5116.4  |
-|  Walker2d      |   |  3098.1  | 1400.6  |   | 4682.8  | 3982.4  |
-|  Hopper        |   |  1860.0  | 2197.0  |   | 3564.1  | 3472.2  |
-|  Swimmer        |   |  /  | 144.1  |   | /  | 104.2  |
-|  Reacher       |   |  -4.01  | -3.3  |   | -3.6  | -2.7  |
+|  HalfCheetah   | 10093 |  8577.3  | <strong>11718</strong>  |   | 9637.0  | 10201.2  |
+|  Ant           | <strong>1472.8</strong>  |  888.8  | 990.4  |   | 4372.0  | 5116.4  |
+|  Walker2d      | 2443.7  |  <strong>3098.1</strong>  | 1400.6  |   | 4682.8  | 3982.4  |
+|  Hopper        | <strong>3434.9</strong>  |  1860.0  | 2197.0  |   | 3564.1  | 3472.2  |
+|  Swimmer        | 67.7  |  /  | <strong>144.1</strong>  |   | /  | 104.2  |
+|  Reacher       | -4.05  |  -4.01  | <strong>-3.3</strong>  |   | -3.6  | -2.7  |
 |  Humanoid      |   |  /  | 177.3  |   | /  | 5189.5  |
-|  InvertedPendulum  |   |  1000.0  | 1000.0  |   | 1000.0  | 1000.0  |
+|  InvertedPendulum  | 1000.0  |  1000.0  | 1000.0  |   | 1000.0  | 1000.0  |
 |  InvertedDoublePendulum  |   |  8370.0  | 8364.3  |   | 9337.5  | 9349.2  |
 
 ## Citing XuanCE ##
