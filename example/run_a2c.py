@@ -27,7 +27,7 @@ if __name__ == "__main__":
     device = args.device
     config = get_config(args.config,args.domain)
     # define the vector environment
-    envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
+    envs = [BasicWrapper(gym.make("Ant-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
     envs = ActionNorm(envs)
     envs = RewardNorm(config,envs,train=(args.pretrain_weight is None))

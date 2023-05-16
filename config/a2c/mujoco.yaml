@@ -15,5 +15,5 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logdir: "./logs/HalfCheetah/a2c/" 
-modeldir: "./models/HalfCheetah/a2c/"
+logdir: "./logs/Ant/a2c/" 
+modeldir: "./models/Ant/a2c/"
