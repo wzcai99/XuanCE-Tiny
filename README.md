@@ -158,6 +158,7 @@ $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./
 
 ## Benchmark Results (ToDo) ##
 We will provide a complete benchmark results in MuJoCo and Atari games. The performance are evaluated with the best model during the training and we report the average scores with 3 different random seeds.
+<center>
 |  Environment (3M)  | xuance-a2c | tianshou-a2c | xuance-ppo | tianshou-ppo |
 |  :----:  | :----:  |  :----:  | :----:  | :----:  |
 | HalfCheetah-v4  | <strong>2860.9</strong> | 2377.3  | 5749.3 | <strong>7337</strong> |
@@ -169,7 +170,7 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 | Humanoid-v4  | 392.4 | <strong>5316.6</strong>  | 1057.3 | <strong>1369.7</strong> |
 | InvertedPendulum-v4  | 1000.0 | 1000.0  | 1000.0 | 1000.0 |
 | InvertedDoublePendulum-v4  | <strong>9346.6</strong> | 9351.3  | <strong>9468.2</strong> | 9231.3 |
-
+</center>
 |  Environment (1M)  | xuance-a2c | published-a2c | xuance-ppo | published-ppo |
 |  :----:  | :----:  |  :----:  | :----:  | :----:  |
 | HalfCheetah-v4  | <strong>1264.35</strong> | 1000  | <strong>4628.4</strong> | 1800 |
