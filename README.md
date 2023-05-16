@@ -184,15 +184,15 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 
 |  Environment (1M)  | xuance-ddpg | published-ddpg | tianshou-ddpg | xuance-td3 | published-td3 | tianshou-td3 | 
 |  :----:  | :----:  |  :----:  | :----:  | :----:  | :----:  | :----:  |
-|  HalfCheetah-v4    |   |  8577.3  | 11718  | :----:  | 9637.0  | 10201.2  |
-|  Ant-v4            |   |  888.8  | 990.4  | :----:  | 4372.0  | 5116.4  |
-|  Walker2d-v4       |   |  3098.1  | 1400.6  | :----:  | 4682.8  | 3982.4  |
-|  Hopper-v4         |   |  1860.0  | 2197.0  | :----:  | 3564.1  | 3472.2  |
-|  Swimmer-v4        |   |  /  | 144.1  | :----:  | /  | 104.2  |
-|  Reacher-v4        |   |  -4.01  | -3.3  | :----:  | -3.6  | -2.7  |
-|  Humanoid-v4       |   |  /  | 177.3  | :----:  | /  | 5189.5  |
-|  InvertedPendulum-v4  |   |  1000.0  | 1000.0  | :----:  | 1000.0  | 1000.0  |
-|  InvertedDoublePendulum-v4  |   |  8370.0  | 8364.3  | :----:  | 9337.5  | 9349.2  |
+|  HalfCheetah-v4    |   |  8577.3  | 11718  |   | 9637.0  | 10201.2  |
+|  Ant-v4            |   |  888.8  | 990.4  |   | 4372.0  | 5116.4  |
+|  Walker2d-v4       |   |  3098.1  | 1400.6  |   | 4682.8  | 3982.4  |
+|  Hopper-v4         |   |  1860.0  | 2197.0  |   | 3564.1  | 3472.2  |
+|  Swimmer-v4        |   |  /  | 144.1  |   | /  | 104.2  |
+|  Reacher-v4        |   |  -4.01  | -3.3  |   | -3.6  | -2.7  |
+|  Humanoid-v4       |   |  /  | 177.3  |   | /  | 5189.5  |
+|  InvertedPendulum-v4  |   |  1000.0  | 1000.0  |   | 1000.0  | 1000.0  |
+|  InvertedDoublePendulum-v4  |   |  8370.0  | 8364.3  |   | 9337.5  | 9349.2  |
 
 ## Citing XuanCE ##
 If you use XuanCE in your work, please cite our github repository:
