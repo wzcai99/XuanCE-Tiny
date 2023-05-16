@@ -4,12 +4,12 @@ This repository is a pruned version of the original project [XuanPolicy](https:/
 We make this repo as much as highly-modularized and clean to be friendly for the RL starters.
 And the code is also compatiable and easy-to-use for researchers to implement their own RL algorithms or verify their ideas.
 
-- For example, if you want to benchmark the RL algorithms on some novel problems, just following the example provided in <strong><em> xuance/environment/custom_envs/dmc.py </em></strong> to formalize a novel problem into Markov Decision Process (MDP) into a gym-based wrapper. A tutorial is provided [here]().
-- If you want to try some advanced representation network, just following the example provided in <strong><em> xuance/representation/network.py </em></strong> to define a new class based on <strong><em> torch.nn.Module</em></strong>. A tutorial is provided [here]().
+- For example, if you want to benchmark the RL algorithms on some novel problems, just following the example provided in <strong><em> xuance/environment/custom_envs/dmc.py </em></strong> to formalize a novel problem into Markov Decision Process (MDP) into a gym-based wrapper. A tutorial is provided [here](https://xuance.readthedocs.io/en/latest/).
+- If you want to try some advanced representation network, just following the example provided in <strong><em> xuance/representation/network.py </em></strong> to define a new class based on <strong><em> torch.nn.Module</em></strong>. A tutorial is provided [here](https://xuance.readthedocs.io/en/latest/).
 - If you figure out a better way for RL optimization process, just add a learner similar to the <strong><em> xuance/learner/xxx.py </em></strong> and define your own loss function. You can compare difference in <strong><em> xuance/learner/a2c.py </em></strong> and <strong><em> xuance/learner/ppo.py </em></strong> for your own implementation. 
 - If you propose a more efficient memory buffer and experience replay scheme, just add your own memory buffer class in <strong><em> xuance/utils/memory.py </em></strong> and replace the memory used in the <strong><em> xuance/agents/xxx.py </em></strong>
 - ...
-- More details of the usage can be found in the [documentions]().
+- More details of the usage can be found in the [documentions](https://xuance.readthedocs.io/en/latest/).
 
 In summary, our high-modularized design allows us to focus on unit design and improvements with other parts untouched.
 
