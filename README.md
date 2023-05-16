@@ -25,6 +25,8 @@ Currently, this repo supports the following RL algorithms which are:
 ## Installation ##
 You can clone this repository and install an editable version locally:
 ```
+$ conda create -n xuance python=3.9
+$ conda activate xuance
 $ git clone https://github.com/wzcai99/XuanCE.git
 $ cd XuanCE
 $ pip install -e .

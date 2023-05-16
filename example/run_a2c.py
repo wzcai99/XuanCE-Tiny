@@ -27,13 +27,13 @@ if __name__ == "__main__":
     device = args.device
     config = get_config(args.config,args.domain)
     # define the vector environment
-    envs = [BasicWrapper(gym.make("Ant-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
+    envs = [BasicWrapper(gym.make("Hopper-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
     envs = ActionNorm(envs)
     envs = RewardNorm(config,envs,train=(args.pretrain_weight is None))
     envs = ObservationNorm(config,envs,train=(args.pretrain_weight is None))
     # network and training
-    representation = MLP(space2shape(envs.observation_space),(256,256),nn.LeakyReLU,nn.init.orthogonal_,device)
+    representation = MLP(space2shape(envs.observation_space),(128,128),nn.LeakyReLU,nn.init.orthogonal_,device)
     policy = Gaussian_ActorCritic(envs.action_space,representation,nn.init.orthogonal_,device)
     if args.pretrain_weight:
         policy.load_state_dict(torch.load(args.pretrain_weight,map_location=device))
