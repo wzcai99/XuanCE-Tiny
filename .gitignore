@@ -1,0 +1,5 @@
+*.pyc
+logs/
+models/
+_build/
+xuance.egg-info
