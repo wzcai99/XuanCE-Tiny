@@ -102,14 +102,14 @@ class DQN_Agent:
     
     def benchmark(self,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
         import time
-        epoch = int(train_steps / evaluate_steps)
+        epoch = int(train_steps / evaluate_steps) + 1
         benchmark_scores = []
         benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)[0]})
         best_average_score = np.mean(benchmark_scores[-1]['scores'])
         best_std_score = np.std(benchmark_scores[-1]['scores'])
         for i in range(epoch):
             if i == epoch - 1:
-                train_step = train_step - ((i+1)*evaluate_steps)
+                train_step = train_steps - (i*evaluate_steps)
             else:
                 train_step = evaluate_steps
             self.train(train_step)
