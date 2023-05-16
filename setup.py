@@ -18,7 +18,7 @@ setup(
         'scipy>=1.10.1',
         'seaborn>=0.12.2',
         'tensorboard>=2.12.0',
-        'torch==1.13.1',
+        'torch==1.12.1',
         'torchvision==0.13.1',
         'tqdm>=4.65.0',
         'mujoco==2.3.3',            
