@@ -12,5 +12,5 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/InvertedPendulum/ddpg/"
-modeldir: "./models/InvertedPendulum/ddpg/"
+logdir: "./logs/InvertedDoublePendulum/ddpg/"
+modeldir: "./models/InvertedDoublePendulum/ddpg/"
