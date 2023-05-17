@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # define hyper-parameters
     device = args.device
     config = get_config(args.config,args.domain)
-    envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
+    envs = [BasicWrapper(gym.make("Ant-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
     envs = DummyVecEnv(envs)
     envs = ActionNorm(envs)
     representation = MLP(space2shape(envs.observation_space),(256,),nn.LeakyReLU,nn.init.xavier_uniform_,device)

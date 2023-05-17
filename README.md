@@ -14,13 +14,13 @@ And the code is also compatiable and easy-to-use for researchers to implement th
 In summary, our high-modularized design allows us to focus on unit design and improvements with other parts untouched.
 
 Currently, this repo supports the following RL algorithms which are:
-- Advantage Actor-Critic(A2C)
-- Proximal Policy Optimization(PPO)
-- Deep Deterministic Policy Gradient(DDPG)
-- Twin Delayed DDPG(TD3)
-- Deep-Q Network(DQN)
-- Dueling-Q Network(Duel-DQN)
-- Double-Q Network(DDQN)
+- Advantage Actor-Critic(A2C)[[paper](https://arxiv.org/pdf/1602.01783v2.pdf)]
+- Proximal Policy Optimization(PPO)[[paper](https://arxiv.org/pdf/1707.06347.pdf)]
+- Deep Deterministic Policy Gradient(DDPG)[[paper](https://arxiv.org/pdf/1509.02971.pdf)]
+- Twin Delayed DDPG(TD3)[[paper](https://arxiv.org/pdf/1802.09477.pdf)]
+- Deep-Q Network(DQN)[[paper](https://arxiv.org/pdf/1312.5602.pdf)]
+- Dueling-Q Network(Dueling-DQN)[[paper](https://arxiv.org/pdf/1511.06581.pdf)]
+- Double-Q Network(DDQN)[[paper](https://arxiv.org/pdf/1509.06461.pdf)]
 
 ## Installation ##
 You can clone this repository and install an editable version locally:
@@ -193,9 +193,9 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 |  Hopper        | <strong>3434.9</strong>  |  1860.0  | 2197.0  |   | 3564.1  | 3472.2  |
 |  Swimmer        | 67.7  |  /  | <strong>144.1</strong>  |   | /  | 104.2  |
 |  Reacher       | -4.05  |  -4.01  | <strong>-3.3</strong>  |   | -3.6  | -2.7  |
-|  Humanoid      |   |  /  | 177.3  |   | /  | 5189.5  |
+|  Humanoid      | 99.0 |  /  | <strong>177.3</strong>  |   | /  | 5189.5  |
 |  InvertedPendulum  | 1000.0  |  1000.0  | 1000.0  |   | 1000.0  | 1000.0  |
-|  InvertedDoublePendulum  |   |  8370.0  | 8364.3  |   | 9337.5  | 9349.2  |
+|  InvertedDoublePendulum  | <strong>9359.8</strong>  |  8370.0  | 8364.3  |   | 9337.5  | 9349.2  |
 
 ## Citing XuanCE ##
 If you use XuanCE in your work, please cite our github repository:

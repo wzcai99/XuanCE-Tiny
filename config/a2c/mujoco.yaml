@@ -9,11 +9,11 @@ clipgrad_norm: 0.5
 lr_rate: 0.001
 
 save_model_frequency: 100
-train_steps: 20000
+train_steps: 62500
 evaluate_steps: 10000
 
 gamma: 0.99
 tdlam: 0.95
 
-logdir: "./logs/Hopper/a2c/" 
-modeldir: "./models/Hopper/a2c/"
+logdir: "./logs/Humanoid/a2c/" 
+modeldir: "./models/Humanoid/a2c/"

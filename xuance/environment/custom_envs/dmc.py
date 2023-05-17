@@ -66,6 +66,8 @@ class DMControl(gym.Env):
         trunction = (self.episode_time >= self.timelimit)
         info = {}
         return next_obs,reward,done,trunction,info
+    
+    
         
         
         

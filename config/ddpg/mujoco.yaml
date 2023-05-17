@@ -7,10 +7,10 @@ training_frequency: 1
 tau: 0.01
 actor_lr_rate: 0.001
 critic_lr_rate: 0.001
-save_model_frequency: 1000
+save_model_frequency: 10000
 start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/InvertedDoublePendulum/ddpg/"
-modeldir: "./models/InvertedDoublePendulum/ddpg/"
+logdir: "./logs/Humanoid/ddpg/"
+modeldir: "./models/Humanoid/ddpg/"
