@@ -13,5 +13,5 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/Ant/td3/"
-modeldir: "./models/Ant/td3/"
+logdir: "./logs/Humanoid/td3/"
+modeldir: "./models/Humanoid/td3/"
