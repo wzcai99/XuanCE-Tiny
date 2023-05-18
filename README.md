@@ -159,14 +159,14 @@ $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./
 <img decoding="async" src="./figures/tensorboard.png" width="40%" height=250> -->
 
 ## Benchmark Results (ToDo) ##
-We will provide a complete benchmark results in MuJoCo and Atari games. The performance are evaluated with the best model during the training and we report the average scores with 3 different random seeds.
+We will provide a complete benchmark results in MuJoCo and Atari games. The performance are evaluated with the best model during the training and we report the average scores with 3 different random seeds. We compare the performance with the published results and the experiment results from [Tianshou benchmark](https://tianshou.readthedocs.io/en/master/tutorials/benchmark.html#mujoco-benchmark)
 
 <div align=center>
 <figure>
-<img src="./figures/halfcheetah.png" width="48%" />
-<img src="./figures/Ant.png" width="48%" />
-<img src="./figures/Hopper.png" width="48%" />
-<img src="./figures/InvertedPendulum.png" width="48%" />
+<img src="./figures/halfcheetah.png" width="49%" />
+<img src="./figures/Ant.png" width="49%" />
+<img src="./figures/Hopper.png" width="49%" />
+<img src="./figures/InvertedPendulum.png" width="49%" />
 </figure>
 </div>
 
