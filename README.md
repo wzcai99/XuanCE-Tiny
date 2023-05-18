@@ -163,10 +163,11 @@ We will provide a complete benchmark results in MuJoCo and Atari games. The perf
 
 <div align=center>
 <figure>
-<img src="./figures/halfcheetah.png" width="49%" />
-<img src="./figures/Ant.png" width="49%" />
-<img src="./figures/Hopper.png" width="49%" />
-<img src="./figures/InvertedPendulum.png" width="49%" />
+<img src="./figures/mujoco_benchmark.png" width="99%" />
+<img src="./figures/halfcheetah.png" width="48%" />
+<img src="./figures/Ant.png" width="48%" />
+<img src="./figures/Hopper.png" width="48%" />
+<img src="./figures/InvertedPendulum.png" width="48%" />
 </figure>
 </div>
 
