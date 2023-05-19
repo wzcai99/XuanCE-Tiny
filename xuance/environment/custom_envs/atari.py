@@ -10,8 +10,8 @@ from gym.spaces import Space, Box, Discrete, Dict
 
 class Atari(gym.Env):
     def __init__(self,env_id,render_mode='rgb_array'):
-        self.env = gym.make(env_id,render_mode)
-        self.observation_space = Box(0, 1, (IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNEL * STACK_SIZE))
+        self.env = gym.make(env_id,render_mode=render_mode)
+        self.observation_space = Box(0, 1, (IMAGE_CHANNEL * STACK_SIZE,IMAGE_SIZE, IMAGE_SIZE))
         self.action_space = self.env.action_space
         self.render_mode = render_mode
         self._metadata = self.env._metadata
@@ -22,18 +22,16 @@ class Atari(gym.Env):
         if IMAGE_CHANNEL == 1:
             resize_image = cv2.cvtColor(resize_image, cv2.COLOR_BGR2GRAY)
             resize_image = np.expand_dims(resize_image, axis=2)
-        resize_image = resize_image.astype(np.float32) / 255.0
         self.stack_image = np.tile(resize_image, (1, 1, STACK_SIZE))
-        return self.stack_image
+        return self.stack_image.transpose(2,0,1)
 
     def _process_step_image(self, image):
         resize_image = cv2.resize(image, (IMAGE_SIZE, IMAGE_SIZE))
         if IMAGE_CHANNEL == 1:
             resize_image = cv2.cvtColor(resize_image, cv2.COLOR_BGR2GRAY)
             resize_image = np.expand_dims(resize_image, axis=2)
-        resize_image = resize_image.astype(np.float32) / 255.0
         self.stack_image = np.concatenate((self.stack_image[:, :, :-IMAGE_CHANNEL], resize_image), axis=2)
-        return self.stack_image
+        return self.stack_image.transpose(2,0,1)
     
     # FireReset
     # NoOpReset
@@ -41,14 +39,14 @@ class Atari(gym.Env):
         obs,info = self.env.reset()
         self.lives = self.env.unwrapped.ale.lives()
         if self.env.unwrapped.get_action_meanings()[1] == 'FIRE':
-            obs, _, done, _ = self.env.step(1)
-            if done:
-                obs = self.env.reset()
+            obs, _, done,trunction, _ = self.env.step(1)
+            if done or trunction:
+                obs,info = self.env.reset()
         noop = np.random.randint(0, 30)
         for i in range(noop):
-            obs, _, done, _ = self.env.step(0)
-            if done:
-                obs = self.env.reset()
+            obs, _, done,trunction, _ = self.env.step(0)
+            if done or trunction:
+                obs,info = self.env.reset()
                 break
         return self._process_reset_image(obs),info
     
