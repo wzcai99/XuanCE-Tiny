@@ -40,7 +40,8 @@ class Running_MeanStd:
             self.mean[key] = new_mean
             self.var[key] = new_var
             self.count[key] = new_count
-            
+
+
 
         
         
