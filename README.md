@@ -11,7 +11,14 @@ And the code is also compatiable and easy-to-use for researchers to implement th
 - ...
 - More details of the usage can be found in the [documentions](https://xuance.readthedocs.io/en/latest/).
 
-In summary, our high-modularized design allows us to focus on unit design and improvements with other parts untouched.
+In summary, our high-modularized design allows us to focus on unit design and improvements with other parts untouched. The highlighs of our project are listed below:
+- Custom environment, network architecture, policy optimization 
+- Custom evaluation process
+- Support dictionary state inputs
+- Support efficient environments parallization ([EnvPool](https://github.com/sail-sg/envpool))
+- Tensorboard Logging
+- Video Capturing
+- Benchmarking Experiments
 
 Currently, this repo supports the following RL algorithms which are:
 - Advantage Actor-Critic(A2C)[[paper](https://arxiv.org/pdf/1602.01783v2.pdf)]
@@ -88,18 +95,26 @@ config = get_config(args.config,args.domain)
 ```
 Note that the argument <strong><em>config</em></strong> is the directory saving the PyYAML file and the argument <strong><em>domain</em></strong> is the filename of the PyYAML file.
 
-Define a vector of environments:
+Define a vanilla vector of environments:
 ```
 from xuance.environment import BasicWrapper,DummyVecEnv,RewardNorm,ObservationNorm,ActionNorm
-envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
-envs = DummyVecEnv(envs)
-# To include action normalization,
-envs = ActionNorm(envs)
-# To include observation normalization,
-envs = ObservationNorm(config,envs,train=args.pretrain_weight is None)
-# To include reward normalization,
-envs = RewardNorm(config,envs,train=args.pretrain_weight is None)
+train_envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
+train_envs = DummyVecEnv(envs)
+train_envs = ActionNorm(envs)
+train_envs = ObservationNorm(config,envs,train=args.pretrain_weight is None)
+train_envs = RewardNorm(config,envs,train=args.pretrain_weight is None)
 ```
+
+Or you can define an efficient EnvPool-based vector environments:
+```
+from xuance.environment import EnvPool_Wrapper,EnvPool_ActionNorm,EnvPool_RewardNorm,EnvPool_ObservationNorm
+train_envs = envpool.make(args.env_id,"gym",num_envs=config.nenvs)
+train_envs = EnvPool_Wrapper(train_envs)
+train_envs = EnvPool_ActionNorm(train_envs)
+train_envs = EnvPool_RewardNorm(config,train_envs)
+train_envs = EnvPool_ObservationNorm(config,train_envs)
+```
+
 Define a representation network:
 ```
 from xuance.representation import MLP
@@ -130,14 +145,29 @@ from xuance.agent import A2C_Agent
 learner = A2C_Learner(config,policy,optimizer,scheduler,device)
 agent = A2C_Agent(config,envs,policy,learner)
 ```
-Train the RL agent or test the RL agent:
+Train the RL agent:
 ```
 agent.train(config.train_steps)
-agent.test(20,args.render) # test for 20 episodes
+```
+
+In many cases, the RL algorithm will be evaluated on a different environment to test the generalization ability, Therefore, in our framework, it is required to define a function for the test environment. Here is an example:
+```
+def build_test_env():
+    test_envs = [BasicWrapper(gym.make(args.env_id,render_mode="rgb_array")) for _ in range(1)]
+    test_envs = DummyVecEnv(test_envs)
+    test_envs = ActionNorm(test_envs)
+    test_envs = RewardNorm(config,test_envs,train=False)
+    test_envs = ObservationNorm(config,test_envs,train=False)
+    return test_envs
+```
+Then, you can test your RL agent by parsing the function
+```
+test_env = build_test_env()
+agent.test(test_env,10,args.render) # test for 10 episodes
 ```
 You can also run a benchmark experiment:
 ```
-agent.benchmark(config.train_steps,config.evaluate_steps,render=args.render)
+agent.benchmark(build_test_env,config.train_steps,config.evaluate_steps,render=args.render)
 ```
 
 After that, you can use tensorboard or the plotter to see the training curve.
