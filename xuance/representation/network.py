@@ -39,11 +39,11 @@ class CNN(nn.Module):
             block,input_shape = cnn_block(input_shape,f,k,s,activation,initialize,device)
             layers.extend(block)
         layers.append(nn.Flatten())
-        self.output_shape = {'state':(np.prod(layers),)}
+        self.output_shape = {'state':(np.prod(input_shape),)}
         self.model = nn.Sequential(*layers)
         
     def forward(self,observation: dict):
-        tensor_observation = torch.as_tensor(observation['observation']/255.0,dtype=torch.float32,device=self.device).permute(0,3,1,2)
+        tensor_observation = torch.as_tensor(observation['observation']/255.0,dtype=torch.float32,device=self.device)
         state = self.model(tensor_observation)
         return {'state':state}
 
