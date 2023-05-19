@@ -1,4 +1,3 @@
-from math import trunc
 from xuance.environment import *
 from xuance.environment.vectorize import VecEnv
 class RewardNorm(VecEnv):
@@ -15,11 +14,14 @@ class RewardNorm(VecEnv):
         self.return_rms = Running_MeanStd({'return':(1,)})
         self.episode_rewards = [[] for i in range(self.num_envs)]
         self.train_steps = 0
+        self.train = train
         if train == False:
             self.load_rms()
 
     def load_rms(self):
         npy_path = os.path.join(self.config.modeldir,"reward_stat.npy")
+        if not os.path.exists(npy_path):
+            return
         rms_data = np.load(npy_path,allow_pickle=True).item()
         self.return_rms.count = rms_data['count']
         self.return_rms.mean = rms_data['mean']
@@ -31,7 +33,8 @@ class RewardNorm(VecEnv):
             if terminals[i] != True and trunctions[i] != True:
                 self.episode_rewards[i].append(rews[i])
             else:
-                self.return_rms.update({'return':discount_cumsum(self.episode_rewards[i],self.gamma)[0:1][np.newaxis,:]})
+                if self.train:
+                    self.return_rms.update({'return':discount_cumsum(self.episode_rewards[i],self.gamma)[0:1][np.newaxis,:]})
                 self.episode_rewards[i].clear()
             scale = np.clip(self.return_rms.std['return'][0],self.scale_range[0],self.scale_range[1])
             rews[i] =  np.clip(rews[i]/scale,self.reward_range[0],self.reward_range[1])
@@ -60,18 +63,22 @@ class ObservationNorm(VecEnv):
         self.vecenv = vecenv
         self.obs_rms = Running_MeanStd(space2shape(vecenv.observation_space))
         self.train_steps = 0
+        self.train = train
         if train == False:
             self.load_rms()
     
     def load_rms(self):
         npy_path = os.path.join(self.config.modeldir,"observation_stat.npy")
+        if not os.path.exists(npy_path):
+            return
         rms_data = np.load(npy_path,allow_pickle=True).item()
         self.obs_rms.count = rms_data['count']
         self.obs_rms.mean = rms_data['mean']
         self.obs_rms.var = rms_data['var']
     def step_wait(self):
         obs,rews,terminals,trunctions,infos = self.vecenv.step_wait()
-        self.obs_rms.update(obs)
+        if self.train:
+            self.obs_rms.update(obs)
         norm_observation = {}
         for key,value in zip(obs.keys(),obs.values()):
             if key in self.forbidden_keys:
@@ -114,4 +121,5 @@ class ActionNorm(VecEnv):
     def get_images(self):
         return self.vecenv.get_images()
     def close_extras(self):
-        return self.vecenv.close_extras()
+        return self.vecenv.close_extras()    
+

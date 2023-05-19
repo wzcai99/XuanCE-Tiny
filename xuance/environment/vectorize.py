@@ -161,6 +161,7 @@ class DummyVecEnv(VecEnv):
             self._save_obs(e, obs)
         self.waiting = False
         return copy.deepcopy(self.buf_obs), self.buf_rews.copy(), self.buf_dones.copy(), self.buf_trunctions.copy(), self.buf_infos.copy()
+    
     def close_extras(self):
         self.closed = True
         for env in self.envs:
@@ -169,6 +170,7 @@ class DummyVecEnv(VecEnv):
         return [env.render() for env in self.envs]
     def render(self,mode):
         return super().render(mode)
+    
     # save observation of indexes of e environment
     def _save_obs(self, e, obs):
         if isinstance(self.observation_space,gym.spaces.Dict):
@@ -176,5 +178,9 @@ class DummyVecEnv(VecEnv):
                 self.buf_obs[k][e] = obs[k]
         else:
             self.buf_obs[e] = obs
+        
+        
 
+    
+    
     
