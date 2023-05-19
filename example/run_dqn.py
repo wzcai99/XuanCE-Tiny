@@ -27,6 +27,7 @@ if __name__ == "__main__":
     # define hyper-parameters
     device = args.device
     config = get_config(args.config,args.domain)
+    
     #define a vector enviroment
     # train_envs = [BasicWrapper(Atari("PongNoFrameskip-v4",render_mode="rgb_array")) for i in range(config.nenvs)]
     # train_envs = DummyVecEnv(train_envs)
@@ -35,7 +36,6 @@ if __name__ == "__main__":
     train_envs = envpool.make("Pong-v5","gym",num_envs=config.nenvs)
     train_envs = EnvPool_Wrapper(train_envs)
     
-    #envs = EnvPool_Wrapper(envpool.make("Pong-v5","gym",num_envs=config.nenvs))
     representation = CNN(space2shape(train_envs.observation_space),(16,16,32,32),(8,6,4,4),(2,2,2,2),nn.LeakyReLU,nn.init.orthogonal_,device)
     policy = DQN_Policy(train_envs.action_space,representation,nn.init.orthogonal_,device)
     if args.pretrain_weight:

@@ -27,6 +27,7 @@ if __name__ == "__main__":
     args = get_args()
     device = args.device
     config = get_config(args.config,args.domain)
+    
     # define a vector environment
     # train_envs = [BasicWrapper(gym.make(args.env_id,render_mode='rgb_array')) for i in range(config.nenvs)]
     # train_envs = DummyVecEnv(train_envs)

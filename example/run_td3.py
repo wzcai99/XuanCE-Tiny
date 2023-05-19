@@ -28,6 +28,7 @@ if __name__ == "__main__":
     # define hyper-parameters
     device = args.device
     config = get_config(args.config,args.domain)
+    
     # train_envs = [BasicWrapper(gym.make(args.env_id,render_mode='rgb_array')) for i in range(config.nenvs)]
     # train_envs = DummyVecEnv(train_envs)
     # train_envs = ActionNorm(train_envs)
