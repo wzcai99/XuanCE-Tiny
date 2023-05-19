@@ -75,13 +75,11 @@ class PPO_Agent:
             obs = next_obs
             self.train_steps += 1
 
-    def test(self,test_episode=10,render=False):
-        import copy
-        test_environment = copy.deepcopy(self.environment)
+    def test(self,test_environment,test_episode=10,render=False):
         obs,infos = test_environment.reset()
         current_episode = 0
         scores = []
-        images = [[] for i in range(self.nenvs)]
+        images = [[] for i in range(test_environment.num_envs)]
         episode_images = []
         while current_episode < test_episode:
             if render:
@@ -93,29 +91,36 @@ class PPO_Agent:
             
             outputs,actions,pred_values = self.interact(obs,False)
             next_obs,rewards,terminals,trunctions,infos = test_environment.step(actions)
-            for i in range(self.nenvs):
+            for i in range(test_environment.num_envs):
                 if terminals[i] == True or trunctions[i] == True:
                     scores.append(infos[i]['episode_score'])
                     episode_images.append(images[i])
                     images[i] = []
                     current_episode += 1
             obs = next_obs
+        print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
-    def benchmark(self,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
+    def benchmark(self,env_fn,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
         import time
-        epoch = int(train_steps / evaluate_steps) + 1
+        test_environment = env_fn()
         benchmark_scores = []
-        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)[0]})
+        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_environment,test_episode,render)[0]})
+        test_environment.close()
+        
+        epoch = int(train_steps / evaluate_steps) + 1
         best_average_score = np.mean(benchmark_scores[-1]['scores'])
         best_std_score = np.std(benchmark_scores[-1]['scores'])
+        
         for i in range(epoch):
             if i == epoch - 1:
                 train_step = train_steps - (i*evaluate_steps)
             else:
                 train_step = evaluate_steps
             self.train(train_step)
-            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_episode,render)[0]})
+            test_environment = env_fn()
+            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_environment,test_episode,render)[0]})
+            test_environment.close()
             if np.mean(benchmark_scores[-1]['scores']) > best_average_score:
                 best_average_score = np.mean(benchmark_scores[-1]['scores'])
                 best_std_score = np.std(benchmark_scores[-1]['scores'])
