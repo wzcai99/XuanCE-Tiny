@@ -25,5 +25,11 @@ setup(
         'mujoco-py==2.1.2.14',
         'free-mujoco-py==2.1.6',
         'dm_control==1.0.11',
+        'ale-py==0.8.1',
+        'atari-py==0.3.0',
+        'attrs==21.2.0',
+        'AutoROM==0.4.2',
+        'AutoROM.accept-rom-license==0.4.2',
+        'envpool'
     ]
 )
