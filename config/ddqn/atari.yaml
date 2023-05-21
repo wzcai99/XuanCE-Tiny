@@ -1,5 +1,7 @@
 algo_name: double-dqn
 env_name: Pong
+seed: 1069
+
 nenvs: 4
 nsize: 25000
 minibatch: 256

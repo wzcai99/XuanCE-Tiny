@@ -1,5 +1,7 @@
 algo_name: dqn
 env_name: Pong
+seed: 1069
+
 nenvs: 8  
 nsize: 10000
 minibatch: 128

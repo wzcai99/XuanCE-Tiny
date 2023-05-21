@@ -1,5 +1,6 @@
 algo_name: ddpg
 env_name: HalfCheetah
+seed: 1069
 
 nenvs: 4
 nsize: 50000

@@ -1,5 +1,6 @@
 algo_name: dueling-dqn
 env_name: Pong
+seed: 1069
 
 nenvs: 4
 nsize: 25000
