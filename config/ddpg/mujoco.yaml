@@ -1,3 +1,4 @@
+name: ddpg
 nenvs: 4
 nsize: 50000
 minibatch: 256

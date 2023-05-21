@@ -1,3 +1,4 @@
+name: dueling-dqn
 nenvs: 4
 nsize: 25000
 minibatch: 256

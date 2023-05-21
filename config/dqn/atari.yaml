@@ -1,3 +1,4 @@
+name: dqn
 nenvs: 8  
 nsize: 10000
 minibatch: 128

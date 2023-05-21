@@ -1,3 +1,4 @@
+name: a2c
 nenvs: 16
 nsize: 32
 nminibatch: 1
@@ -15,5 +16,6 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logdir: "./logs/Humanoid/a2c/" 
-modeldir: "./models/Humanoid/a2c/"
+logger: wandb # or tensorboard
+logdir: "./logs/HalfCheetah/a2c/"
+modeldir: "./models/HalfCheetah/a2c/"
