@@ -1,4 +1,6 @@
-name: ddpg
+algo_name: ddpg
+env_name: HalfCheetah
+
 nenvs: 4
 nsize: 50000
 minibatch: 256
@@ -13,5 +15,5 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/Humanoid/ddpg/"
-modeldir: "./models/Humanoid/ddpg/"
+logdir: "./logs/"
+modeldir: "./models/"

@@ -1,4 +1,6 @@
-name: ppo
+algo_name: ppo
+env_name: HalfCheetah
+
 nenvs: 16
 nsize: 256
 nminibatch: 8
@@ -19,5 +21,5 @@ gamma: 0.99
 tdlam: 0.95
 
 logger: wandb # or tensorboard
-logdir: "./logs/HalfCheetah/ppo/"
-modeldir: "./models/HalfCheetah/ppo/"
+logdir: "./logs/"
+modeldir: "./models/"

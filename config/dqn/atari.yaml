@@ -1,4 +1,5 @@
-name: dqn
+algo_name: dqn
+env_name: Pong
 nenvs: 8  
 nsize: 10000
 minibatch: 128
@@ -12,5 +13,5 @@ start_training_size: 10000
 train_steps: 1250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/PongNoFrameskip-v4/dqn/"
-modeldir: "./models/PongNoFrameskip-v4/dqn/"
+logdir: "./logs/"
+modeldir: "./models/"

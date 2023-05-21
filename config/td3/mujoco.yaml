@@ -1,4 +1,6 @@
-name: td3
+algo_name: td3
+env_name: HalfCheetah
+
 nenvs: 4
 nsize: 50000
 minibatch: 256
@@ -14,5 +16,5 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logdir: "./logs/Humanoid/td3/"
-modeldir: "./models/Humanoid/td3/"
+logdir: "./logs/"
+modeldir: "./models/"
