@@ -16,14 +16,23 @@ class TD3_Learner:
         self.tau = config.tau
         self.gamma = config.gamma
         self.update_decay = config.actor_update_decay
-        
-        self.logdir = config.logdir
-        self.modeldir = config.modeldir
         self.save_model_frequency = config.save_model_frequency
-        self.summary = SummaryWriter(self.logdir)
         self.iterations = 0
-        create_directory(self.logdir)
+        
+        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d"%config.seed)
+        self.modeldir = os.path.join(config.modeldir,config.env_name,config.algo_name+"-%d/"%config.seed)
+        self.logger = config.logger
         create_directory(self.modeldir)
+        create_directory(self.logdir)
+        if self.logger == 'wandb':
+            self.summary = wandb.init(project="XuanCE",
+                                      group=config.env_name,
+                                      name=config.algo_name,
+                                      config=wandb.helper.parse_config(vars(config), exclude=('logger','logdir','modeldir')))
+        elif self.logger == 'tensorboard':
+            self.summary = SummaryWriter(self.logdir)
+        else:
+            raise NotImplementedError  
         
     def update(self,input_batch,action_batch,reward_batch,terminal_batch,next_input_batch):
         self.iterations += 1
@@ -49,15 +58,21 @@ class TD3_Learner:
             A_loss.backward()
             self.actor_optimizer.step()
             self.actor_scheduler.step()
-            self.summary.add_scalar("A-loss",A_loss.item(),self.iterations)
-            self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
+            if self.logger == 'tensorboard':
+                self.summary.add_scalar("A-loss",A_loss.item(),self.iterations)
+                self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
+                self.summary.add_scalar("Q-loss",Q_loss.item(),self.iterations)
+                self.summary.add_scalar("actor-learning-rate",self.actor_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
+                self.summary.add_scalar("critic-learning-rate",self.critic_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
+            else:
+                wandb.log({'Q-loss':Q_loss.item(),
+                           "A-loss":A_loss.item(),
+                           "actor-learning-rate":self.actor_optimizer.state_dict()['param_groups'][0]['lr'],
+                           "critic-learning-rate":self.critic_optimizer.state_dict()['param_groups'][0]['lr'],
+                           "value_function":evalQ.mean().item(),
+                           "iterations":self.iterations})
+            
         self.policy.soft_update(self.tau)
-        
-        self.summary.add_scalar("Q-loss",Q_loss.item(),self.iterations)
-        self.summary.add_scalar("actor-learning-rate",self.actor_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
-        self.summary.add_scalar("critic-learning-rate",self.critic_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
-       
-        
         if self.iterations % self.save_model_frequency == 0:
             time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
             model_path = self.modeldir + "model-%s-%s.pth" % (time_string, str(self.iterations))

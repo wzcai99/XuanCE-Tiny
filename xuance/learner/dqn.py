@@ -12,14 +12,24 @@ class DQN_Learner:
         self.device = device
         
         self.gamma = config.gamma
-        self.logdir = config.logdir
-        self.modeldir = config.modeldir
         self.update_frequency = config.update_frequency
         self.save_model_frequency = config.save_model_frequency
-        self.summary = SummaryWriter(self.logdir)
         self.iterations = 0
-        create_directory(self.logdir)
+        
+        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d"%config.seed)
+        self.modeldir = os.path.join(config.modeldir,config.env_name,config.algo_name+"-%d/"%config.seed)
+        self.logger = config.logger
         create_directory(self.modeldir)
+        create_directory(self.logdir)
+        if self.logger == 'wandb':
+            self.summary = wandb.init(project="XuanCE",
+                                      group=config.env_name,
+                                      name=config.algo_name,
+                                      config=wandb.helper.parse_config(vars(config), exclude=('logger','logdir','modeldir')))
+        elif self.logger == 'tensorboard':
+            self.summary = SummaryWriter(self.logdir)
+        else:
+            raise NotImplementedError  
         
     def update(self,input_batch,action_batch,reward_batch,terminal_batch,next_input_batch):
         self.iterations += 1
@@ -43,9 +53,15 @@ class DQN_Learner:
         if self.iterations % self.update_frequency == 0:
             self.policy.update_target()
         
-        self.summary.add_scalar("q-loss",loss.item(),self.iterations)
-        self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
-        self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
+        if self.logger == 'tensorboard':
+            self.summary.add_scalar("Q-loss",loss.item(),self.iterations)
+            self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
+            self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
+        else:
+            wandb.log({'Q-loss':loss.item(),
+                       "learning-rate":self.optimizer.state_dict()['param_groups'][0]['lr'],
+                       "value_function":evalQ.mean().item(),
+                       "iterations":self.iterations})
         
         if self.iterations % self.save_model_frequency == 0:
             time_string = time.asctime().replace(":", "_")#.replace(" ", "_")

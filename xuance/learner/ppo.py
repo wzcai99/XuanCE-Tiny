@@ -15,13 +15,24 @@ class PPO_Learner:
         self.ent_coef = config.ent_coef
         self.clipgrad_norm = config.clipgrad_norm
         self.clip_range = config.clip_range
-        self.logdir = config.logdir
-        self.modeldir = config.modeldir
         self.save_model_frequency = config.save_model_frequency
-        self.summary = SummaryWriter(self.logdir)
         self.iterations = 0
-        create_directory(self.logdir)
+     
+        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d"%config.seed)
+        self.modeldir = os.path.join(config.modeldir,config.env_name,config.algo_name+"-%d/"%config.seed)
+        self.logger = config.logger
         create_directory(self.modeldir)
+        create_directory(self.logdir)
+        if self.logger == 'wandb':
+            self.summary = wandb.init(project="XuanCE",
+                                      group=config.env_name,
+                                      name=config.algo_name,
+                                      config=wandb.helper.parse_config(vars(config), exclude=('logger','logdir','modeldir')))
+        elif self.logger == 'tensorboard':
+            self.summary = SummaryWriter(self.logdir)
+        else:
+            raise NotImplementedError  
+        
     def update(self,input_batch,action_batch,output_batch,return_batch,advantage_batch):
         self.iterations += 1
         tensor_action_batch = torch.as_tensor(action_batch,device=self.device)
@@ -54,15 +65,23 @@ class PPO_Learner:
         torch.nn.utils.clip_grad_norm_(self.policy.parameters(), self.clipgrad_norm)
         self.optimizer.step()
         self.scheduler.step()
-        
-        self.summary.add_scalar("ratio",ratio.mean().item(),self.iterations)
-        self.summary.add_scalar("actor-loss",actor_loss.item(),self.iterations)
-        self.summary.add_scalar("critic-loss",critic_loss.item(),self.iterations)
-        self.summary.add_scalar("entropy-loss",entropy_loss.item(),self.iterations)
-        self.summary.add_scalar("kl-divergence",approx_kl.item(),self.iterations)
-        self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
-        self.summary.add_scalar("value_function",critic.mean().item(),self.iterations)
-        
+        if self.logger == 'tensorboard':
+            self.summary.add_scalar("ratio",ratio.mean().item(),self.iterations)
+            self.summary.add_scalar("actor-loss",actor_loss.item(),self.iterations)
+            self.summary.add_scalar("critic-loss",critic_loss.item(),self.iterations)
+            self.summary.add_scalar("entropy-loss",entropy_loss.item(),self.iterations)
+            self.summary.add_scalar("kl-divergence",approx_kl.item(),self.iterations)
+            self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
+            self.summary.add_scalar("value_function",critic.mean().item(),self.iterations)
+        else:
+            wandb.log({'ratio':ratio.mean().item(),
+                       'actor-loss':actor_loss.item(),
+                       "critic-loss":critic_loss.item(),
+                       "entropy-loss":entropy_loss.item(),
+                       "kl-divergence":approx_kl.item(),
+                       "learning-rate":self.optimizer.state_dict()['param_groups'][0]['lr'],
+                       "value_function":critic.mean().item(),
+                       "iterations":self.iterations})
         if self.iterations % self.save_model_frequency == 0:
             time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
             model_path = self.modeldir + "model-%s-%s.pth" % (time_string, str(self.iterations))
