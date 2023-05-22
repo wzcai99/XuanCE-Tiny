@@ -51,12 +51,12 @@ class EnvPool_Wrapper:
                 current_dict = {}
                 for key,value in zip(obs.keys(),obs.values()):
                     current_dict[key] = value[i]
-                infos.append({'episode_length':self.episode_lengths[i],
-                              'episode_score':self.episode_scores[i],
+                infos.append({'episode_length':self.last_episode_lengths[i],
+                              'episode_score':self.last_episode_scores[i],
                               'next_observation':current_dict})
             else:
-                infos.append({'episode_length':self.episode_lengths[i],
-                              'episode_score':self.episode_scores[i],
+                infos.append({'episode_length':self.last_episode_lengths[i],
+                              'episode_score':self.last_episode_scores[i],
                               'next_observation':{'observation':obs[i]}})
         if isinstance(obs,dict):
             return obs,rewards,terminals,trunctions,infos         
@@ -86,11 +86,12 @@ class EnvPool_ObservationNorm(EnvPool_Normalizer):
         self.forbidden_keys = forbidden_keys
         self.obs_rms = Running_MeanStd(space2shape(self.observation_space))
         self.train = train
+        self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
         if self.train == False:
             self.load_rms()
             
     def load_rms(self):
-        npy_path = os.path.join(self.config.modeldir,"observation_stat.npy")
+        npy_path = os.path.join(self.save_dir,"observation_stat.npy")
         if not os.path.exists(npy_path):
             return
         rms_data = np.load(npy_path,allow_pickle=True).item()
@@ -105,7 +106,7 @@ class EnvPool_ObservationNorm(EnvPool_Normalizer):
     def step(self,actions):
         self.train_steps += 1
         if self.config.train_steps == self.train_steps or self.train_steps % self.config.save_model_frequency == 0:
-            np.save(os.path.join(self.config.modeldir,"observation_stat.npy"),{'count':self.obs_rms.count,'mean':self.obs_rms.mean,'var':self.obs_rms.var})
+            np.save(os.path.join(self.save_dir,"observation_stat.npy"),{'count':self.obs_rms.count,'mean':self.obs_rms.mean,'var':self.obs_rms.var})
         obs,rews,terminals,trunctions,infos = self.vecenv.step(actions)
         if self.train:
             self.obs_rms.update(obs)
@@ -130,10 +131,11 @@ class EnvPool_RewardNorm(EnvPool_Normalizer):
         self.return_rms = Running_MeanStd({'return':(1,)})
         self.episode_rewards = [[] for i in range(self.num_envs)]
         self.train = train
+        self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
         if train == False:
             self.load_rms()
     def load_rms(self):
-        npy_path = os.path.join(self.config.modeldir,"reward_stat.npy")
+        npy_path = os.path.join(self.save_dir,"reward_stat.npy")
         if not os.path.exists(npy_path):
             return
         rms_data = np.load(npy_path,allow_pickle=True).item()
@@ -147,7 +149,7 @@ class EnvPool_RewardNorm(EnvPool_Normalizer):
     def step(self,act):
         self.train_steps += 1
         if self.config.train_steps == self.train_steps or self.train_steps % self.config.save_model_frequency == 0:
-            np.save(os.path.join(self.config.modeldir,"reward_stat.npy"),{'count':self.return_rms.count,'mean':self.return_rms.mean,'var':self.return_rms.var})
+            np.save(os.path.join(self.save_dir,"reward_stat.npy"),{'count':self.return_rms.count,'mean':self.return_rms.mean,'var':self.return_rms.var})
         obs,rews,terminals,trunctions,infos = self.vecenv.step(act)
         for i in range(len(rews)):
             if terminals[i] != True and trunctions[i] != True:

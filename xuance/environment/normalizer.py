@@ -15,11 +15,12 @@ class RewardNorm(VecEnv):
         self.episode_rewards = [[] for i in range(self.num_envs)]
         self.train_steps = 0
         self.train = train
+        self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
         if train == False:
             self.load_rms()
 
     def load_rms(self):
-        npy_path = os.path.join(self.config.modeldir,"reward_stat.npy")
+        npy_path = os.path.join(self.save_dir,"reward_stat.npy")
         if not os.path.exists(npy_path):
             return
         rms_data = np.load(npy_path,allow_pickle=True).item()
@@ -44,7 +45,7 @@ class RewardNorm(VecEnv):
     def step_async(self, actions):
         self.train_steps += 1
         if self.config.train_steps == self.train_steps or self.train_steps % self.config.save_model_frequency == 0:
-            np.save(os.path.join(self.config.modeldir,"reward_stat.npy"),{'count':self.return_rms.count,'mean':self.return_rms.mean,'var':self.return_rms.var})
+            np.save(os.path.join(self.save_dir,"reward_stat.npy"),{'count':self.return_rms.count,'mean':self.return_rms.mean,'var':self.return_rms.var})
         return self.vecenv.step_async(actions)
     def get_images(self):
         return self.vecenv.get_images()
@@ -64,11 +65,12 @@ class ObservationNorm(VecEnv):
         self.obs_rms = Running_MeanStd(space2shape(vecenv.observation_space))
         self.train_steps = 0
         self.train = train
+        self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
         if train == False:
             self.load_rms()
     
     def load_rms(self):
-        npy_path = os.path.join(self.config.modeldir,"observation_stat.npy")
+        npy_path = os.path.join(self.save_dir,"observation_stat.npy")
         if not os.path.exists(npy_path):
             return
         rms_data = np.load(npy_path,allow_pickle=True).item()
@@ -91,7 +93,7 @@ class ObservationNorm(VecEnv):
     def step_async(self, actions):
         self.train_steps += 1
         if self.config.train_steps == self.train_steps or self.train_steps % self.config.save_model_frequency == 0:
-            np.save(os.path.join(self.config.modeldir,"observation_stat.npy"),{'count':self.obs_rms.count,'mean':self.obs_rms.mean,'var':self.obs_rms.var})
+            np.save(os.path.join(self.save_dir,"observation_stat.npy"),{'count':self.obs_rms.count,'mean':self.obs_rms.mean,'var':self.obs_rms.var})
         return self.vecenv.step_async(actions)
     def get_images(self):
         return self.vecenv.get_images()
