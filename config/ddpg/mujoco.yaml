@@ -1,6 +1,6 @@
 algo_name: ddpg
 env_name: HalfCheetah
-seed: 1069
+seed: 9871
 
 nenvs: 4
 nsize: 50000
@@ -16,5 +16,6 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
+logger: wandb
 logdir: "./logs/"
 modeldir: "./models/"

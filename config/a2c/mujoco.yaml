@@ -1,6 +1,6 @@
 algo_name: a2c
 env_name: HalfCheetah
-seed: 1069
+seed: 8885
 
 nenvs: 16
 nsize: 32
@@ -19,6 +19,6 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logger: tensorboard # or tensorboard
+logger: wandb # or tensorboard
 logdir: "./logs/"
 modeldir: "./models/"

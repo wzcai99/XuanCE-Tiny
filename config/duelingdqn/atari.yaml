@@ -15,5 +15,6 @@ start_training_size: 1000
 train_steps: 25000
 evaluate_steps: 500
 gamma: 0.99
+logger: wandb
 logdir: "./logs/"
 modeldir: "./models/"
