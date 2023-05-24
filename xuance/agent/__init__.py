@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import wandb
 from xuance.utils.memory import *
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm

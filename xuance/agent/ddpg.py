@@ -30,10 +30,17 @@ class DDPG_Agent:
                                            self.nenvs,
                                            self.nsize,
                                            self.minibatch)
-        self.summary = SummaryWriter(self.config.logdir)
-        
+        self.logger = self.config.logger
+        self.summary = self.learner.summary
         self.train_episodes = np.zeros((self.nenvs,),np.int32)
         self.train_steps = 0
+        
+        if self.logger=="wandb":
+            wandb.define_metric("train-steps")
+            wandb.define_metric("train-rewards/*",step_metric="train-steps")
+            wandb.define_metric("evaluate-steps")
+            wandb.define_metric("evaluate-rewards/*",step_metric="evaluate-steps")
+            
     
     def interact(self,inputs,noise):
         outputs,action,_ = self.policy(inputs)
@@ -63,8 +70,10 @@ class DDPG_Agent:
             for i in range(self.nenvs):
                 if terminals[i] or trunctions[i]:
                     self.train_episodes[i] += 1
-                    self.summary.add_scalars("rewards-episode",{"env-%d"%i:infos[i]['episode_score']},self.train_episodes[i])
-                    self.summary.add_scalars("rewards-steps",{"env-%d"%i:infos[i]['episode_score']},self.train_steps)
+                    if self.logger == "tensorboard":
+                        self.summary.add_scalars("train-rewards-steps",{"env-%d"%i:infos[i]['episode_score']},self.train_steps*self.nenvs)
+                    else:
+                        wandb.log({f"train-rewards/{i}":infos[i]['episode_score'],'train-steps':self.train_steps*self.nenvs})
             obs = next_obs
             self.train_steps += 1
             self.noise = self.noise - (self.start_noise-self.end_noise)/self.config.train_steps
@@ -74,7 +83,8 @@ class DDPG_Agent:
         current_episode = 0
         scores = []
         images = [[] for i in range(test_environment.num_envs)]
-        episode_images = []
+        best_score = -np.inf
+        
         while current_episode < test_episode:
             if render:
                 test_environment.render("human")
@@ -86,11 +96,19 @@ class DDPG_Agent:
             next_obs,rewards,terminals,trunctions,infos = test_environment.step(actions)
             for i in range(test_environment.num_envs):
                 if terminals[i] == True or trunctions[i] == True:
+                    if self.logger == 'tensorboard':
+                        self.summary.add_scalars("evaluate-score",{"episode-%d"%current_episode:infos[i]['episode_score']},self.train_steps*self.nenvs)
+                    else:
+                        wandb.log({f"evaluate-rewards/{current_episode}":infos[i]['episode_score'],'evaluate-steps':self.train_steps*self.nenvs})
+                    if infos[i]['episode_score'] > best_score:
+                        episode_images = images[i].copy()
+                        best_score = infos[i]['episode_score']
+                        
                     scores.append(infos[i]['episode_score'])
-                    episode_images.append(images[i])
-                    images[i] = []
+                    images[i].clear()
                     current_episode += 1
             obs = next_obs
+        
         print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
@@ -98,12 +116,15 @@ class DDPG_Agent:
         import time
         epoch = int(train_steps / evaluate_steps) + 1
         test_environment = env_fn()
+        evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
         benchmark_scores = []
-        benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_environment,test_episode,render)[0]})
+        benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})
         test_environment.close()
         
         best_average_score = np.mean(benchmark_scores[-1]['scores'])
         best_std_score = np.std(benchmark_scores[-1]['scores'])
+        best_video = evaluate_video
+        
         for i in range(epoch):
             if i == epoch - 1:
                 train_step = train_steps - (i*evaluate_steps)
@@ -111,16 +132,23 @@ class DDPG_Agent:
                 train_step = evaluate_steps
             self.train(train_step)
             test_environment = env_fn()
-            benchmark_scores.append({'steps':self.train_steps,'scores':self.test(test_environment,test_episode,render)[0]})
+            evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
+            benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})
             test_environment.close()
+            
             if np.mean(benchmark_scores[-1]['scores']) > best_average_score:
                 best_average_score = np.mean(benchmark_scores[-1]['scores'])
                 best_std_score = np.std(benchmark_scores[-1]['scores'])
+                best_video = evaluate_video
                 if save_best_model == True:
-                    model_path = self.config.modeldir + "best_model.pth"
+                    model_path = self.learner.modeldir + "/best_model.pth"
                     torch.save(self.policy.state_dict(), model_path)
-        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
-        np.save(self.config.logdir+"benchmark_%s.npy"%time_string, benchmark_scores)
-        print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))
         
-             
+        if self.logger == "tensorboard":
+            self.summary.add_video("video",torch.as_tensor(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
+        else:
+            wandb.log({"video":wandb.Video(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),fps=50,format='gif')},step=self.train_steps*self.nenvs)
+            
+        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
+        np.save(self.learner.logdir+"/benchmark_%s.npy"%time_string, benchmark_scores)
+        print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))
