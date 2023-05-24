@@ -1,6 +1,6 @@
 algo_name: ppo
 env_name: HalfCheetah
-seed: 5689
+seed: 7891
 
 nenvs: 16
 nsize: 256
@@ -21,6 +21,6 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logger: wandb # or tensorboard
+logger: tensorboard # or tensorboard
 logdir: "./logs/"
 modeldir: "./models/"

@@ -1,6 +1,6 @@
 algo_name: td3
 env_name: HalfCheetah
-seed: 1069
+seed: 6782
 
 nenvs: 4
 nsize: 50000
