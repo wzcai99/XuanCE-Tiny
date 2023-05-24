@@ -1,6 +1,6 @@
 algo_name: ppo
-env_name: HalfCheetah
-seed: 7891
+env_name: Swimmer
+seed: 79811
 
 nenvs: 16
 nsize: 256
@@ -21,6 +21,6 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logger: tensorboard # or tensorboard
+logger: wandb # or tensorboard
 logdir: "./logs/"
 modeldir: "./models/"
