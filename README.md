@@ -55,7 +55,7 @@ $ python -m example.run_ppo
 ```
 or follow the belowing step-by-step instructions.
 
-<strong>Step 1: Define all the hyper-parameters in PyYAML format.</strong>
+**Step 1: Define all the hyper-parameters in PyYAML format.**
 
 Here is an example of configuration file of PPO.
 
@@ -87,7 +87,7 @@ logger: wandb # logger, you can choose wandb or tensorboard
 logdir: "./logs/" # logging directory
 modeldir: "./models/" # model save directory
 ```
-<strong>Step 2: Import some relavant packages: </strong>
+**Step 2: Import some relavant packages:**
 ```
 import torch
 import torch.nn as nn
@@ -96,7 +96,7 @@ import argparse
 import gym
 from xuance.utils.common import space2shape,get_config
 ```
-<strong>Step 3: Parse some relavant arguments: </strong>
+**Step 3: Parse some relavant arguments:**
 ```
 def get_args():
     parser = argparse.ArgumentParser()
@@ -112,9 +112,9 @@ args = get_args()
 device = args.device
 config = get_config(args.config,args.domain)
 ```
-Note that the argument <strong><em>config</em></strong> is the directory saving the PyYAML file and the argument <strong><em>domain</em></strong> is the filename of the PyYAML file.
+Note that the argument **config** is the directory saving the PyYAML file and the argument **domain** is the filename of the PyYAML file.
 
-<strong>Step 4: Define a training environments (Vector) </strong>
+**Step 4: Define a training environments (Vector)**
 ```
 from xuance.environment import BasicWrapper,DummyVecEnv,RewardNorm,ObservationNorm,ActionNorm
 train_envs = [BasicWrapper(gym.make(args.env_id,render_mode='rgb_array')) for i in range(config.nenvs)]
@@ -125,7 +125,7 @@ train_envs = RewardNorm(config,envs,train=(args.pretrain_weight is None))
 ```
 Note that in some RL algorithms (e.g. A2C, PPO), normalizing the observation data and scaling the reward value is essential for data efficiency, therefore, we introduce the ActionNorm, ObservationNorm, and RewardNorm. But you can make adjustments according to your needs.
 
-<strong>Similarly, EnvPool-based vector environments are also supported.</strong>
+**Similarly, EnvPool-based vector environments are also supported.**
 ```
 from xuance.environment import EnvPool_Wrapper,EnvPool_ActionNorm,EnvPool_RewardNorm,EnvPool_ObservationNorm
 train_envs = envpool.make(args.env_id,"gym",num_envs=config.nenvs)
@@ -135,12 +135,12 @@ train_envs = EnvPool_RewardNorm(config,train_envs,train=(args.pretrain_weight is
 train_envs = EnvPool_ObservationNorm(config,train_envs,train=(args.pretrain_weight is None))
 ```
 
-<strong>Step 5: Define a representation network for state encoding.</strong>
+**Step 5: Define a representation network for state encoding.**
 ```
 from xuance.representation import MLP
 representation = MLP(space2shape(envs.observation_space),(128,128),nn.LeakyReLU,nn.init.orthogonal_,device)
 ```
-<strong>Step 6: Define the policy head on the top of the representation network.</strong>
+**Step 6: Define the policy head on the top of the representation network.**
 
 For the discrete action space:
 ```
@@ -158,13 +158,13 @@ if args.pretrain_weight:
     policy.load_state_dict(torch.load(args.pretrain_weight,map_location=device))
 ```
 
-<strong>Step 7: Define an optimizer and a learning rate scheduler:</strong>
+**Step 7: Define an optimizer and a learning rate scheduler:**
 ```
 optimizer = torch.optim.Adam(policy.parameters(),config.lr_rate)
 scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1.0, end_factor=0.1,total_iters=config.train_steps/config.nsize * config.nepoch * config.nminibatch)
 ```
 
-<strong>Step 8: Define the RL learner and agent. </strong>
+**Step 8: Define the RL learner and agent.**
 ```
 from xuance.learner import PPO_Learner
 from xuance.agent import PPO_Agent
@@ -172,7 +172,7 @@ learner = PPO_Learner(config,policy,optimizer,scheduler,device)
 agent = PPO_Agent(config,envs,policy,learner)
 ```
 
-<strong>Step 9: Train and evaluate the RL agent.</strong>
+**Step 9: Train and evaluate the RL agent.**
 
 Train the RL agent:
 ```
@@ -200,7 +200,7 @@ agent.benchmark(build_test_env,config.train_steps,config.evaluate_steps,render=a
 ```
 The benchmark function will automatically switch between training and evaluation.
 
-<strong> Step 10: Use the tensorboard of the wandb to visualize the training process.</strong>
+**Step 10: Use the tensorboard of the wandb to visualize the training process.**
 For the usage of the wandb, we recommand to run a wandb server locally to avoid the network error, to install and run the wandb locally, follow the tutorial [here](https://github.com/wandb/server). If everything goes well, the wandb logging and the tensorboard logging will show as follows:
 <div align=center>
 <figure>
