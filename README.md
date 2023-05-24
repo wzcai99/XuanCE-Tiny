@@ -205,7 +205,7 @@ For the usage of the wandb, we recommand to run a wandb server locally to avoid 
 <div align=center>
 <figure>
 <img src="./figures/wandb_vis.png" width="50%" height=225/>
-<img src="./figures/tensorboard_vis.png" width="49%" height=225/>
+<img src="./figures/tensorboard_vis.png" width="45%" height=225/>
 </figure>
 </div>
 
