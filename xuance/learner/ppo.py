@@ -18,7 +18,7 @@ class PPO_Learner:
         self.save_model_frequency = config.save_model_frequency
         self.iterations = 0
      
-        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d"%config.seed)
+        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d/"%config.seed)
         self.modeldir = os.path.join(config.modeldir,config.env_name,config.algo_name+"-%d/"%config.seed)
         self.logger = config.logger
         create_directory(self.modeldir)
@@ -28,6 +28,8 @@ class PPO_Learner:
                                       group=config.env_name,
                                       name=config.algo_name,
                                       config=wandb.helper.parse_config(vars(config), exclude=('logger','logdir','modeldir')))
+            wandb.define_metric("iterations")
+            wandb.define_metric("train/*",step_metric="iterations")
         elif self.logger == 'tensorboard':
             self.summary = SummaryWriter(self.logdir)
         else:
@@ -74,13 +76,13 @@ class PPO_Learner:
             self.summary.add_scalar("learning-rate",self.optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
             self.summary.add_scalar("value_function",critic.mean().item(),self.iterations)
         else:
-            wandb.log({'ratio':ratio.mean().item(),
-                       'actor-loss':actor_loss.item(),
-                       "critic-loss":critic_loss.item(),
-                       "entropy-loss":entropy_loss.item(),
-                       "kl-divergence":approx_kl.item(),
-                       "learning-rate":self.optimizer.state_dict()['param_groups'][0]['lr'],
-                       "value_function":critic.mean().item(),
+            wandb.log({'train/ratio':ratio.mean().item(),
+                       'train/actor-loss':actor_loss.item(),
+                       "train/critic-loss":critic_loss.item(),
+                       "train/entropy-loss":entropy_loss.item(),
+                       "train/kl-divergence":approx_kl.item(),
+                       "train/learning-rate":self.optimizer.state_dict()['param_groups'][0]['lr'],
+                       "train/value_function":critic.mean().item(),
                        "iterations":self.iterations})
         if self.iterations % self.save_model_frequency == 0:
             time_string = time.asctime().replace(":", "_")#.replace(" ", "_")

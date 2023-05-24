@@ -18,7 +18,7 @@ class DDPG_Learner:
         self.save_model_frequency = config.save_model_frequency
         self.iterations = 0
         
-        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d"%config.seed)
+        self.logdir = os.path.join(config.logdir,config.env_name,config.algo_name+"-%d/"%config.seed)
         self.modeldir = os.path.join(config.modeldir,config.env_name,config.algo_name+"-%d/"%config.seed)
         self.logger = config.logger
         create_directory(self.modeldir)
@@ -28,6 +28,8 @@ class DDPG_Learner:
                                       group=config.env_name,
                                       name=config.algo_name,
                                       config=wandb.helper.parse_config(vars(config), exclude=('logger','logdir','modeldir')))
+            wandb.define_metric("iterations")
+            wandb.define_metric("train/*",step_metric="iterations")
         elif self.logger == 'tensorboard':
             self.summary = SummaryWriter(self.logdir)
         else:
@@ -66,11 +68,11 @@ class DDPG_Learner:
             self.summary.add_scalar("critic-learning-rate",self.critic_optimizer.state_dict()['param_groups'][0]['lr'],self.iterations)
             self.summary.add_scalar("value_function",evalQ.mean().item(),self.iterations)
         else:
-            wandb.log({'Q-loss':Q_loss.item(),
-                       "A-loss":A_loss.item(),
-                       "actor-learning-rate":self.actor_optimizer.state_dict()['param_groups'][0]['lr'],
-                       "critic-learning-rate":self.critic_optimizer.state_dict()['param_groups'][0]['lr'],
-                       "value_function":evalQ.mean().item(),
+            wandb.log({'train/Q-loss':Q_loss.item(),
+                       "train/A-loss":A_loss.item(),
+                       "train/actor-learning-rate":self.actor_optimizer.state_dict()['param_groups'][0]['lr'],
+                       "train/critic-learning-rate":self.critic_optimizer.state_dict()['param_groups'][0]['lr'],
+                       "train/value_function":evalQ.mean().item(),
                        "iterations":self.iterations})
         
         if self.iterations % self.save_model_frequency == 0:
