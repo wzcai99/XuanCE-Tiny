@@ -12,14 +12,14 @@ setup(
         'gym==0.26.1',
         'matplotlib>=3.7.1',
         'opencv-python >= 4.7.0.72',
-        'numpy==1.23.1',
         'pandas>=1.5.3',
         'PyYAML>=6.0',
         'scipy>=1.10.1',
         'seaborn>=0.12.2',
         'tensorboard>=2.12.0',
-        'torch==1.12.1',
-        'torchvision==0.13.1',
+        'torch>=1.12.1,<2.0.0',
+        'torchvision>=0.13.0,<0.14.0',
+        'torchaudio>=0.13.0,<0.14.0',
         'tqdm>=4.65.0',
         'mujoco==2.3.3',            
         'mujoco-py==2.1.2.14',
@@ -32,7 +32,8 @@ setup(
         'AutoROM.accept-rom-license==0.4.2',
         'envpool==0.8.2',
         'wandb==0.15.1',
-        'moviepy',
-        'imageio'
+        'moviepy==1.0.3',
+        'imageio==2.28.1',
+        'numpy==1.23.1',
     ]
 )
