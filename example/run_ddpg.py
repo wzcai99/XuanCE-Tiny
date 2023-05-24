@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import argparse
 import gym
 import envpool
+import numpy as np
+import random
 from xuance.utils.common import space2shape,get_config
 from xuance.environment import BasicWrapper,ActionNorm,DummyVecEnv
 from xuance.environment import EnvPool_Wrapper,EnvPool_RewardNorm,EnvPool_ActionNorm,EnvPool_ObservationNorm
@@ -23,16 +25,19 @@ def get_args():
     args = parser.parse_known_args()[0]
     return args
 
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
 if __name__ == "__main__":
     args = get_args()
     device = args.device
     config = get_config(args.config,args.domain)
-    
-    # define a vector environment
-    # train_envs = [BasicWrapper(gym.make(args.env_id,render_mode='rgb_array')) for i in range(config.nenvs)]
-    # train_envs = DummyVecEnv(train_envs)
-    # train_envs = ActionNorm(train_envs)
-    
+    set_seed(config.seed)
+
     # define a envpool environment
     train_envs = envpool.make(args.env_id,"gym",num_envs=config.nenvs)
     train_envs = EnvPool_Wrapper(train_envs)

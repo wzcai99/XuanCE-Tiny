@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import argparse
 import envpool
-
+import numpy as np
+import random
 from xuance.utils.common import space2shape,get_config
 from xuance.environment import BasicWrapper,DummyVecEnv,Atari
 from xuance.environment import EnvPool_Wrapper,EnvPool_RewardNorm,EnvPool_ActionNorm,EnvPool_ObservationNorm
@@ -22,16 +23,19 @@ def get_args():
     args = parser.parse_known_args()[0]
     return args
 
+def set_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
 if __name__ == "__main__":
     args = get_args()
-    # define hyper-parameters
     device = args.device
     config = get_config(args.config,args.domain)
-    
-    #define a vector enviroment
-    # train_envs = [BasicWrapper(Atari("PongNoFrameskip-v4",render_mode="rgb_array")) for i in range(config.nenvs)]
-    # train_envs = DummyVecEnv(train_envs)
-    
+    set_seed(config.seed)
+
     #define a envpool environment
     train_envs = envpool.make("Pong-v5","gym",num_envs=config.nenvs)
     train_envs = EnvPool_Wrapper(train_envs)
