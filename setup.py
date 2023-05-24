@@ -30,6 +30,9 @@ setup(
         'attrs==21.2.0',
         'AutoROM==0.4.2',
         'AutoROM.accept-rom-license==0.4.2',
-        'envpool'
+        'envpool==0.8.2',
+        'wandb==0.15.1',
+        'moviepy',
+        'imageio'
     ]
 )

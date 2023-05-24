@@ -32,7 +32,7 @@ Currently, this repo supports the following RL algorithms which are:
 ## Installation ##
 You can clone this repository and install an editable version locally:
 ```
-$ conda create -n xuance python=3.9
+$ conda create -n xuance python=3.8
 $ conda activate xuance
 $ git clone https://github.com/wzcai99/XuanCE.git
 $ cd XuanCE
@@ -99,7 +99,7 @@ Note that the argument <strong><em>config</em></strong> is the directory saving 
 Define a vanilla vector of environments:
 ```
 from xuance.environment import BasicWrapper,DummyVecEnv,RewardNorm,ObservationNorm,ActionNorm
-train_envs = [BasicWrapper(gym.make("HalfCheetah-v4",render_mode='rgb_array')) for i in range(config.nenvs)]
+train_envs = [BasicWrapper(gym.make(args.env_id,render_mode='rgb_array')) for i in range(config.nenvs)]
 train_envs = DummyVecEnv(envs)
 train_envs = ActionNorm(envs)
 train_envs = ObservationNorm(config,envs,train=args.pretrain_weight is None)
@@ -184,7 +184,6 @@ $ python -m xuance.utils.tensorboard_plotter --env_name=HalfCheetah --log_dir=./
 <img src="./figures/tensorboard.png" width="45%" height=225/>
 </figure>
 </div>
-
 
 <!-- <img decoding="async" src="./figures/plotter.png" width="40%" height=250>
 <img decoding="async" src="./figures/tensorboard.png" width="40%" height=250> -->

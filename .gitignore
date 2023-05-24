@@ -3,4 +3,5 @@ __pycache__
 logs/
 models/
 _build/
+wandb/
 xuance.egg-info
