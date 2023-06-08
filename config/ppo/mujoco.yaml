@@ -1,5 +1,5 @@
 algo_name: ppo
-env_name: Swimmer
+env_name: LunarLander
 seed: 79811
 
 nenvs: 16
@@ -21,6 +21,6 @@ evaluate_steps: 10000
 gamma: 0.99
 tdlam: 0.95
 
-logger: wandb # or tensorboard
-logdir: "./logs/"
-modeldir: "./models/"
+logger: tensorboard # or wandb | tensorboard
+logdir: "logs/"
+modeldir: "models/"
