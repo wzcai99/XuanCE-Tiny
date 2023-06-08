@@ -196,7 +196,7 @@ agent.test(test_env,10,args.render) # test for 10 episodes
 ```
 You can also run a benchmark experiment as follows:
 ```
-agent.benchmark(build_test_env,config.train_steps,config.evaluate_steps,render=args.render)
+agent.benchmark(test_env,config.train_steps,config.evaluate_steps,render=args.render)
 ```
 The benchmark function will automatically switch between training and evaluation.
 
