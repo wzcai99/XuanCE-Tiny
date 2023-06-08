@@ -63,7 +63,9 @@ if __name__ == "__main__":
         test_envs = RewardNorm(config,test_envs,train=False)
         test_envs = ObservationNorm(config,test_envs,train=False)
         return test_envs
-    agent.benchmark(build_test_env,config.train_steps,config.evaluate_steps,render=args.render)
+
+    test_envs = build_test_env()
+    agent.benchmark(test_envs,config.train_steps,config.evaluate_steps,render=args.render)
 
 
 

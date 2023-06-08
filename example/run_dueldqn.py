@@ -53,7 +53,8 @@ if __name__ == "__main__":
         test_envs = [BasicWrapper(Atari("PongNoFrameskip-v4",render_mode="rgb_array")) for _ in range(1)]
         test_envs = DummyVecEnv(test_envs)
         return test_envs
-    agent.benchmark(build_env_fn,config.train_steps,config.evaluate_steps,0,render=args.render)
+    test_envs = build_env_fn()
+    agent.benchmark(test_envs,config.train_steps,config.evaluate_steps,0,render=args.render)
 
 
 
