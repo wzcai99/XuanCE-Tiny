@@ -1,11 +1,11 @@
 algo_name: ddpg
-env_name: HalfCheetah
-seed: 3577
+env_name: Walker2d
+seed: 19089
 
 nenvs: 4
 nsize: 50000
 minibatch: 256
-start_noise: 0.5
+start_noise: 1.0
 end_noise: 0.01
 training_frequency: 1
 tau: 0.01
@@ -16,6 +16,6 @@ start_training_size: 10000
 train_steps: 250000
 evaluate_steps: 10000
 gamma: 0.99
-logger: wandb
+logger: tensorboard
 logdir: "./logs/"
 modeldir: "./models/"
