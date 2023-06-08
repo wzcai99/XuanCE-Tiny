@@ -16,8 +16,6 @@ class RewardNorm(VecEnv):
         self.train_steps = 0
         self.train = train
         self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
-        if train == False:
-            self.load_rms()
 
     def load_rms(self):
         npy_path = os.path.join(self.save_dir,"reward_stat.npy")
@@ -41,6 +39,8 @@ class RewardNorm(VecEnv):
             rews[i] =  np.clip(rews[i]/scale,self.reward_range[0],self.reward_range[1])
         return obs,rews,terminals,trunctions,infos
     def reset(self):
+        if self.train == False:
+            self.load_rms()
         return self.vecenv.reset()
     def step_async(self, actions):
         self.train_steps += 1
@@ -66,8 +66,7 @@ class ObservationNorm(VecEnv):
         self.train_steps = 0
         self.train = train
         self.save_dir = os.path.join(self.config.modeldir,self.config.env_name,self.config.algo_name+"-%d"%self.config.seed)
-        if train == False:
-            self.load_rms()
+
     
     def load_rms(self):
         npy_path = os.path.join(self.save_dir,"observation_stat.npy")
@@ -77,6 +76,7 @@ class ObservationNorm(VecEnv):
         self.obs_rms.count = rms_data['count']
         self.obs_rms.mean = rms_data['mean']
         self.obs_rms.var = rms_data['var']
+        
     def step_wait(self):
         obs,rews,terminals,trunctions,infos = self.vecenv.step_wait()
         if self.train:
@@ -89,6 +89,8 @@ class ObservationNorm(VecEnv):
             norm_observation[key] = np.clip((value - self.obs_rms.mean[key]) * scale_factor,self.obs_range[0],self.obs_range[1])
         return norm_observation,rews,terminals,trunctions,infos
     def reset(self):
+        if self.train == False:
+            self.load_rms()
         return self.vecenv.reset()
     def step_async(self, actions):
         self.train_steps += 1
