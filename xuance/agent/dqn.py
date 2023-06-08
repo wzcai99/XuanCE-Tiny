@@ -120,14 +120,14 @@ class DQN_Agent:
         print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
-    def benchmark(self,env_fn,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
+    def benchmark(self,test_environment,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
         import time
         epoch = int(train_steps / evaluate_steps) + 1
-        test_environment = env_fn()
+
         evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
         benchmark_scores = []
         benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})
-        test_environment.close()
+       
         
         best_average_score = np.mean(benchmark_scores[-1]['scores'])
         best_std_score = np.std(benchmark_scores[-1]['scores'])
@@ -139,10 +139,10 @@ class DQN_Agent:
             else:
                 train_step = evaluate_steps
             self.train(train_step)
-            test_environment = env_fn()
+           
             evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
             benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})
-            test_environment.close()
+
             
             if np.mean(benchmark_scores[-1]['scores']) > best_average_score:
                 best_average_score = np.mean(benchmark_scores[-1]['scores'])
