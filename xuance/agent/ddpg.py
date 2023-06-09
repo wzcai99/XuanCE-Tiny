@@ -109,7 +109,8 @@ class DDPG_Agent:
                     current_episode += 1
             obs = next_obs
         
-        print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
+        print("[%s] Training Steps:%.2f K, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(get_time_hm(), self.train_steps*self.nenvs/1000,
+                                                                                       test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
     def benchmark(self,test_environment,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
@@ -147,6 +148,6 @@ class DDPG_Agent:
         else:
             wandb.log({"video":wandb.Video(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),fps=50,format='gif')},step=self.train_steps*self.nenvs)
             
-        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
-        np.save(self.learner.logdir+"/benchmark_%s.npy"%time_string, benchmark_scores)
+
+        np.save(self.learner.logdir+"/benchmark_%s.npy"%get_time_full(), benchmark_scores)
         print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))

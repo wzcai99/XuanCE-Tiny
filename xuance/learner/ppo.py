@@ -85,8 +85,7 @@ class PPO_Learner:
                        "train/value_function":critic.mean().item(),
                        "iterations":self.iterations})
         if self.iterations % self.save_model_frequency == 0:
-            time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
-            model_path = self.modeldir + "model-%s-%s.pth" % (time_string, str(self.iterations))
+            model_path = self.modeldir + "model-%s-%s.pth" % (get_time_full(), str(self.iterations))
             torch.save(self.policy.state_dict(), model_path)
         return approx_kl
         

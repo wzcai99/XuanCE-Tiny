@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import wandb
 from xuance.utils.memory import *
+from xuance.utils.common import get_time_hm, get_time_full
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 

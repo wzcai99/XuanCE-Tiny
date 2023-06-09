@@ -1,5 +1,6 @@
 import gym
 import os
+import time 
 import yaml
 import scipy.signal
 import numpy as np
@@ -35,3 +36,12 @@ def combined_shape(length, shape=None):
     if shape is None:
         return (length,)
     return (length, shape) if np.isscalar(shape) else (length, *shape)
+
+
+################# Time Func For Log ##############################
+def get_time_hm()->str:
+    localtime = time.localtime(time.time())
+    return "%02d:%02d"%(localtime.tm_hour, localtime.tm_min)
+
+def get_time_full()->str:
+    return time.asctime().replace(":", "_")#.replace(" ", "_")

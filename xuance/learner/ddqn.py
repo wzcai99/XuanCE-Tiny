@@ -67,9 +67,7 @@ class DDQN_Learner:
                        "iterations":self.iterations})
         
         if self.iterations % self.save_model_frequency == 0:
-            time_string = time.asctime()
-            time_string = time_string.replace(" ", "")
-            model_path = self.modeldir + "model-%s-%s.pth" % (time.asctime(), str(self.iterations))
+            model_path = self.modeldir + "model-%s-%s.pth" % (get_time_full(), str(self.iterations))
             torch.save(self.policy.state_dict(), model_path)
         
         

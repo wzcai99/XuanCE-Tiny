@@ -7,6 +7,7 @@ import os
 import wandb
 import numpy as np
 from xuance.utils.common import create_directory
+from xuance.utils.common import get_time_hm, get_time_full
 from torch.utils.tensorboard import SummaryWriter
 
 from .a2c import A2C_Learner
