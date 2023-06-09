@@ -26,7 +26,7 @@ def get_args():
     parser.add_argument("--env_id",type=str,default="stand") # stand, walk, ...
     parser.add_argument("--time_limit",type=int,default=100)
     
-    parser.add_argument("--pretrain_weight",type=str,default=r"D:\zzm_codes\xuance_TneitapSimHand\models\walkerStand0608\ppo-79811\model-Fri Jun  9 15_37_31 2023-51000.pth")
+    parser.add_argument("--pretrain_weight",type=str,default=r"D:\zzm_codes\xuance_TneitapSimHand\models\walkerStand0608\ppo-79811\best_model.pth")
 
     parser.add_argument("--render",type=bool,default=True)
 

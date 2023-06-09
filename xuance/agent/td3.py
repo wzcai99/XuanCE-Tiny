@@ -141,10 +141,13 @@ class TD3_Agent:
                     model_path = self.learner.modeldir + "/best_model.pth"
                     torch.save(self.policy.state_dict(), model_path)
         
-        if self.logger == "tensorboard":
-            self.summary.add_video("video",torch.as_tensor(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
-        else:
-            wandb.log({"video":wandb.Video(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),fps=50,format='gif')},step=self.train_steps*self.nenvs)
+        if not render:
+            # show the best performance video demo on web browser
+            video_arr = np.array(best_video,dtype=np.uint8).transpose(0,3,1,2)
+            if self.logger == "tensorboard":
+                self.summary.add_video("video",torch.as_tensor(video_arr,dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
+            else:
+                wandb.log({"video":wandb.Video(video_arr,fps=50,format='gif')},step=self.nenvs*self.train_steps)
             
         np.save(self.learner.logdir+"/benchmark_%s.npy"%get_time_full(), benchmark_scores)
         print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))

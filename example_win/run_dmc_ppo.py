@@ -23,8 +23,8 @@ def get_args():
     parser.add_argument("--task_id",type=str,default="walker") # walker, swimmer, ...
     parser.add_argument("--env_id",type=str,default="stand") # stand, walk, ...
     parser.add_argument("--time_limit",type=int,default=100)
-    parser.add_argument("--pretrain_weight",type=str,default=None)
-    parser.add_argument("--render",type=bool,default=True)
+    parser.add_argument("--pretrain_weight",type=str)
+    parser.add_argument("--render",type=bool,default=False)
     args = parser.parse_known_args()[0]
     return args
 
@@ -45,7 +45,8 @@ if __name__ == "__main__":
     def build_train_envs(): 
         env = dmc.DMControl(args.task_id,args.env_id, args.time_limit)
         envs = [BasicWrapper(env) for _ in range(config.nenvs)]
-        return ObservationNorm(config, RewardNorm(config, ActionNorm(DummyVecEnv(envs)), train=True), train=True)
+        rms_need_train = False if args.pretrain_weight else True
+        return ObservationNorm(config, RewardNorm(config, ActionNorm(DummyVecEnv(envs)), train=rms_need_train), train=rms_need_train)
 
     def build_test_envs(): 
         env = dmc.DMControl(args.task_id,args.env_id, args.time_limit)
@@ -58,6 +59,8 @@ if __name__ == "__main__":
     policy = Gaussian_ActorCritic(train_envs.action_space,representation,nn.init.orthogonal_,device)
     if args.pretrain_weight:
         policy.load_state_dict(torch.load(args.pretrain_weight,map_location=device))
+
+
     optimizer = torch.optim.Adam(policy.parameters(),config.lr_rate)
     scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=1.0, end_factor=0.5,total_iters=config.train_steps/config.nsize * config.nepoch * config.nminibatch)
     learner = PPO_Learner(config,policy,optimizer,scheduler,device)
