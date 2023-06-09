@@ -19,7 +19,7 @@ def create_directory(path):
     current_dir = dir_split[0] + "/"
     for i in range(1, len(dir_split)):
         if not os.path.exists(current_dir):
-            os.mkdir(current_dir)
+            os.makedirs(current_dir, exist_ok=True)
         current_dir = current_dir + dir_split[i] + "/"
 
 def space2shape(observation_space: gym.Space):
