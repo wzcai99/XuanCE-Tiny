@@ -23,7 +23,7 @@ def get_args():
     parser.add_argument("--task_id",type=str,default="walker") # walker, swimmer, ...
     parser.add_argument("--env_id",type=str,default="stand") # stand, walk, ...
     parser.add_argument("--time_limit",type=int,default=100)
-    parser.add_argument("--pretrain_weight",type=str)
+    parser.add_argument("--pretrain_weight",type=str, default=None)
     parser.add_argument("--render",type=bool,default=False)
     args = parser.parse_known_args()[0]
     return args
