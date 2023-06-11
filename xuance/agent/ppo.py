@@ -50,6 +50,7 @@ class PPO_Agent:
     
     def train(self,train_steps:int=10000):
         obs,infos = self.environment.reset()
+        memfull_episode_count = 0; earlystop_episode_count = 0
         for _ in tqdm(range(train_steps)):
             outputs,actions,pred_values = self.interact(obs)
             next_obs,rewards,terminals,trunctions,infos = self.environment.step(actions)
@@ -71,8 +72,10 @@ class PPO_Agent:
                     input_batch,action_batch,output_batch,return_batch,advantage_batch = self.memory.sample()
                     approx_kl = self.learner.update(input_batch,action_batch,output_batch,return_batch,advantage_batch)
                     if approx_kl > self.config.target_kl:
+                        earlystop_episode_count+=1
                         break
                 self.memory.clear()
+                memfull_episode_count+=1
                 
             for i in range(self.nenvs):
                 if terminals[i] or trunctions[i]:
@@ -84,6 +87,8 @@ class PPO_Agent:
 
             obs = next_obs
             self.train_steps += 1
+        # end single epoch train
+        print("\t[Agent] #Interact= %d; #Mem-full= %d; #Early-stop= %d | [Learner] #Accum-iter= %d"%(train_steps, memfull_episode_count, earlystop_episode_count, self.learner.iterations))
 
     def test(self,test_environment,test_episode=10,render=False):
         obs,infos = test_environment.reset()
@@ -139,6 +144,7 @@ class PPO_Agent:
                 train_step = train_steps - (i*evaluate_steps)
             else:
                 train_step = evaluate_steps
+            print("[Train-test epoch %03d/%03d]: "%(i, epoch))
             self.train(train_step)
             evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
             benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})

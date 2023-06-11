@@ -1,6 +1,6 @@
 from xuance.environment import *
 from dm_control import suite
-import gym.spaces
+import gym.spaces as gym_spaces
 import cv2
 class DMControl(gym.Env):
     def __init__(self,domain_name="humanoid",task_name="stand",timelimit=100,render_mode='rgb_array'):
@@ -25,10 +25,10 @@ class DMControl(gym.Env):
                 obs_shape_dim += 1
             else:
                 obs_shape_dim += shape[0]
-        return gym.spaces.Box(-np.inf, np.inf,(obs_shape_dim,))
+        return gym_spaces.Box(-np.inf, np.inf,(obs_shape_dim,))
             
     def make_action_space(self,act_spec):
-        return gym.spaces.Box(act_spec.minimum,act_spec.maximum,act_spec.shape)
+        return gym_spaces.Box(act_spec.minimum.astype(np.float32),act_spec.maximum.astype(np.float32),act_spec.shape)
     
     def render(self):
         camera_frame0 = self.env.physics.render(camera_id=0, height=240, width=320)

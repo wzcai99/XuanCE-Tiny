@@ -10,23 +10,21 @@ import numpy as np
 import random
 from xuance.utils.common import space2shape,get_config
 from xuance.environment import BasicWrapper,DummyVecEnv,RewardNorm,ObservationNorm,ActionNorm
-# from xuance.environment import EnvPool_Wrapper,EnvPool_ActionNorm,EnvPool_RewardNorm,EnvPool_ObservationNorm
 from xuance.representation import MLP
-from xuance.policy import Categorical_ActorCritic,Gaussian_ActorCritic
-from xuance.learner import PPO_Learner
-from xuance.agent import PPO_Agent
+from xuance.policy import Gaussian_ActorCritic
+
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--device",type=str,default="cuda:0")
     
     parser.add_argument("--config",type=str,default="config/ppo/")
-    parser.add_argument("--domain",type=str,default="walkerStand0608") # default: same config.yaml for env from the same domain
+    parser.add_argument("--domain",type=str,default="walkerStand") # default: same config.yaml for env from the same domain
     parser.add_argument("--task_id",type=str,default="walker") # walker, swimmer, ...
     parser.add_argument("--env_id",type=str,default="stand") # stand, walk, ...
     parser.add_argument("--time_limit",type=int,default=150)
     
-    parser.add_argument("--pretrain_weight",type=str,default=r"D:\zzm_codes\xuance_TneitapSimHand\models\walkerStand0608\ppo-79811\best_model.pth")
+    parser.add_argument("--pretrain_weight",type=str,default=r"D:\zzm_codes\xuance_TneitapSimHand\models\walkerStand0611\ppo-79811\best_model.pth")
 
     parser.add_argument("--render",type=bool,default=True)
 
@@ -43,7 +41,7 @@ if __name__ == "__main__":
 
     def build_test_envs(): 
         env = dmc.DMControl(args.task_id,args.env_id, args.time_limit)
-        envs = [BasicWrapper(env) for _ in range(2)]
+        envs = [BasicWrapper(env) for _ in range(8)]
         envs = RewardNorm(config, ActionNorm(DummyVecEnv(envs)), train=False)
         envs.load_rms() # os.path.join(self.save_dir,"reward_stat.npy")
         envs = ObservationNorm(config, envs, train=False)
