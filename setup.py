@@ -29,6 +29,7 @@ setup(
         'atari-py==0.3.0',
         'attrs==21.2.0',
         'AutoROM==0.4.2',
+        'terminaltables==3.1.10',
         'AutoROM.accept-rom-license==0.4.2',
         'envpool==0.8.2',
         'wandb==0.15.1',

@@ -12,7 +12,7 @@ ent_coef: 0.00
 clipgrad_norm: 0.5
 clip_range: 0.20
 target_kl: 0.01
-lr_rate: 0.0004
+lr_rate: 0.0007
 
 save_model_frequency: 1000
 train_steps: 62500

@@ -109,7 +109,8 @@ class DDPG_Agent:
                     current_episode += 1
             obs = next_obs
         
-        print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
+        print("[%s] Training Steps:%.2f K, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(get_time_hm(), self.train_steps*self.nenvs/1000,
+                                                                                       test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
     def benchmark(self,test_environment,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
@@ -142,11 +143,14 @@ class DDPG_Agent:
                     model_path = self.learner.modeldir + "/best_model.pth"
                     torch.save(self.policy.state_dict(), model_path)
         
-        if self.logger == "tensorboard":
-            self.summary.add_video("video",torch.as_tensor(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
-        else:
-            wandb.log({"video":wandb.Video(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),fps=50,format='gif')},step=self.train_steps*self.nenvs)
+                    if not render:
+                        # show the best performance video demo on web browser
+                        video_arr = np.array(best_video,dtype=np.uint8).transpose(0,3,1,2)
+                        if self.logger == "tensorboard":
+                            self.summary.add_video("video",torch.as_tensor(video_arr,dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
+                        else:
+                            wandb.log({"video":wandb.Video(video_arr,fps=50,format='gif')},step=self.nenvs*self.train_steps)
             
-        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
-        np.save(self.learner.logdir+"/benchmark_%s.npy"%time_string, benchmark_scores)
+
+        np.save(self.learner.logdir+"/benchmark_%s.npy"%get_time_full(), benchmark_scores)
         print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))

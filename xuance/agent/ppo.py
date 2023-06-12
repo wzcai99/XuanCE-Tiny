@@ -50,6 +50,7 @@ class PPO_Agent:
     
     def train(self,train_steps:int=10000):
         obs,infos = self.environment.reset()
+        memfull_episode_count = 0; earlystop_episode_count = 0
         for _ in tqdm(range(train_steps)):
             outputs,actions,pred_values = self.interact(obs)
             next_obs,rewards,terminals,trunctions,infos = self.environment.step(actions)
@@ -71,8 +72,10 @@ class PPO_Agent:
                     input_batch,action_batch,output_batch,return_batch,advantage_batch = self.memory.sample()
                     approx_kl = self.learner.update(input_batch,action_batch,output_batch,return_batch,advantage_batch)
                     if approx_kl > self.config.target_kl:
+                        earlystop_episode_count+=1
                         break
                 self.memory.clear()
+                memfull_episode_count+=1
                 
             for i in range(self.nenvs):
                 if terminals[i] or trunctions[i]:
@@ -84,6 +87,8 @@ class PPO_Agent:
 
             obs = next_obs
             self.train_steps += 1
+        # end single epoch train
+        print("\t[Agent] #Interact= %d; #Mem-full= %d; #Early-stop= %d | [Learner] #Accum-iter= %d"%(train_steps, memfull_episode_count, earlystop_episode_count, self.learner.iterations))
 
     def test(self,test_environment,test_episode=10,render=False):
         obs,infos = test_environment.reset()
@@ -106,7 +111,7 @@ class PPO_Agent:
                     if self.logger == 'tensorboard':
                         self.summary.add_scalars("evaluate-score",{"episode-%d"%current_episode:infos[i]['episode_score']},self.train_steps*self.nenvs)
                     else:
-                         wandb.log({f"evaluate-rewards/{current_episode}":infos[i]['episode_score'],'evaluate-steps':self.train_steps*self.nenvs})
+                        wandb.log({f"evaluate-rewards/{current_episode}":infos[i]['episode_score'],'evaluate-steps':self.train_steps*self.nenvs})
                     
                     if infos[i]['episode_score'] > best_score:
                         episode_images = images[i].copy()
@@ -118,12 +123,13 @@ class PPO_Agent:
             obs = next_obs
         
         
-        print("Training Steps:%d, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(self.train_steps*self.nenvs,test_episode,np.mean(scores),np.std(scores)))
+        print("[%s] Training Steps:%.2f K, Evaluate Episodes:%d, Score Average:%f, Std:%f"%(get_time_hm(), self.train_steps*self.nenvs/1000,
+                                                                                       test_episode,np.mean(scores),np.std(scores)))
         return scores,episode_images
     
     def benchmark(self,test_environment,train_steps:int=10000,evaluate_steps:int=10000,test_episode=10,render=False,save_best_model=True):
-        import time
-        epoch = int(train_steps / evaluate_steps) + 1
+        
+        epoch = int(train_steps / evaluate_steps) + 1 # training times
 
         evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
         benchmark_scores = []
@@ -138,6 +144,7 @@ class PPO_Agent:
                 train_step = train_steps - (i*evaluate_steps)
             else:
                 train_step = evaluate_steps
+            print("[Train-test epoch %03d/%03d]: "%(i, epoch))
             self.train(train_step)
             evaluate_scores,evaluate_video = self.test(test_environment,test_episode,render)
             benchmark_scores.append({'steps':self.train_steps,'scores':evaluate_scores})
@@ -149,14 +156,16 @@ class PPO_Agent:
                 if save_best_model == True:
                     model_path = self.learner.modeldir + "/best_model.pth"
                     torch.save(self.policy.state_dict(), model_path)
-        
-        if self.logger == "tensorboard":
-            self.summary.add_video("video",torch.as_tensor(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
-        else:
-            wandb.log({"video":wandb.Video(np.array(best_video,dtype=np.uint8).transpose(0,3,1,2),fps=50,format='gif')},step=self.nenvs*self.train_steps)
+                    
+                    if not render:
+                        # show the best performance video demo on web browser
+                        video_arr = np.array(best_video,dtype=np.uint8).transpose(0,3,1,2)
+                        if self.logger == "tensorboard":
+                            self.summary.add_video("best_video",torch.as_tensor(video_arr,dtype=torch.uint8).unsqueeze(0),fps=50,global_step=self.nenvs*self.train_steps)
+                        else:
+                            wandb.log({"best_video":wandb.Video(video_arr,fps=50,format='gif')},step=self.nenvs*self.train_steps)
             
-        time_string = time.asctime().replace(":", "_")#.replace(" ", "_")
-        np.save(self.learner.logdir+"/benchmark_%s.npy"%time_string, benchmark_scores)
+        np.save(self.learner.logdir+"/benchmark_%s.npy"%get_time_full(), benchmark_scores)
         print("Best Model score = %f, std = %f"%(best_average_score,best_std_score))
     
 
