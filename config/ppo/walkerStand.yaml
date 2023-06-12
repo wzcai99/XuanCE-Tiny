@@ -1,0 +1,28 @@
+algo_name: ppo
+env_name: walkerStand0612-2
+seed: 79811
+
+nenvs: 64
+nsize: 512
+nminibatch: 16
+nepoch: 8
+
+mlp_hiddens: 128, 128
+
+vf_coef: 0.25
+ent_coef: 0.00
+clipgrad_norm: 0.5
+clip_range: 0.20
+target_kl: 0.025 # "generally found the approx_kl stays below 0.02, and if approx_kl becomes too high it usually means the policy is changing too quickly and there is a bug."
+lr_rate: 0.0004 # "In MuJoCo, the learning rate linearly decays from 3e-4 to 0"
+
+save_model_frequency: 1000
+train_steps: 1024000 # better set as (evaluate_steps * X)
+evaluate_steps: 10240 # better set as (nsize * X)
+
+gamma: 0.98
+tdlam: 0.95
+
+logger: tensorboard # or wandb | tensorboard
+logdir: "logs/"
+modeldir: "models/"

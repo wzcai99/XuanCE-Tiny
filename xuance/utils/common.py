@@ -66,6 +66,7 @@ def log_the_table(title, info_table: list, txt_writer):
 def summarize_ppo_config(pConfig):
         
         info_table = [['item', 'detail']]
+        info_table.append(["# model&log saving dir", pConfig.env_name])
         info_table.append(["# interact envs", pConfig.nenvs])
         info_table.append(["# total train_steps", str(pConfig.train_steps/1000) + " K"])
         info_table.append(["# train-test epochs", pConfig.train_steps // pConfig.evaluate_steps])
